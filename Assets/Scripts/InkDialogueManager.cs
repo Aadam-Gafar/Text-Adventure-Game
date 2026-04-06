@@ -33,9 +33,6 @@ public class InkDialogueManager : MonoBehaviour
     [SerializeField] private GameObject choiceButtonPrefab;
     [SerializeField] private Button menuButton;
 
-    [Header("Settings")]
-    [SerializeField] private float autoScrollSpeed = 0.3f;
-
     private Story story;
     private List<GameObject> currentChoiceButtons = new List<GameObject>();
     private List<StoryHistoryItem> storyHistory = new List<StoryHistoryItem>();
@@ -44,6 +41,8 @@ public class InkDialogueManager : MonoBehaviour
 
     void Start()
     {
+        Application.targetFrameRate = -1;
+
         // Wire up menu button
         if (menuButton != null)
         {
@@ -101,9 +100,6 @@ public class InkDialogueManager : MonoBehaviour
         {
             SaveGame();
         }
-
-        // Auto-scroll to bottom after content is added
-        StartCoroutine(ScrollToBottom());
     }
 
     void AddStoryText(string text, bool isChoice = false)
@@ -123,6 +119,9 @@ public class InkDialogueManager : MonoBehaviour
 
     void DisplayChoices()
     {
+        int choiceCount = story.currentChoices.Count;
+        int currentIndex = 0;
+
         foreach (Choice choice in story.currentChoices)
         {
             GameObject button = Instantiate(choiceButtonPrefab, contentPanel.transform);
@@ -134,10 +133,22 @@ public class InkDialogueManager : MonoBehaviour
             int choiceIndex = choice.index;
             buttonComponent.onClick.AddListener(() => OnChoiceSelected(choiceIndex));
 
+            // If this is the last choice, add extra bottom padding
+            if (currentIndex == choiceCount - 1)
+            {
+                VerticalLayoutGroup layoutGroup = button.GetComponent<VerticalLayoutGroup>();
+                if (layoutGroup != null)
+                {
+                    layoutGroup.padding.bottom = 100;
+                }
+            }
+
             currentChoiceButtons.Add(button);
+            currentIndex++;
         }
 
-        LayoutRebuilder.ForceRebuildLayoutImmediate(contentPanel.GetComponent<RectTransform>());
+        // Only rebuild once after all choices are added
+        Canvas.ForceUpdateCanvases();
     }
 
     void OnChoiceSelected(int choiceIndex)
@@ -210,22 +221,5 @@ public class InkDialogueManager : MonoBehaviour
 
         // Load main menu
         SceneManager.LoadScene("MainMenu");
-    }
-
-    IEnumerator ScrollToBottom()
-    {
-        yield return new WaitForEndOfFrame();
-
-        float elapsedTime = 0f;
-        float startValue = scrollRect.verticalNormalizedPosition;
-
-        while (elapsedTime < autoScrollSpeed)
-        {
-            elapsedTime += Time.deltaTime;
-            scrollRect.verticalNormalizedPosition = Mathf.Lerp(startValue, 0f, elapsedTime / autoScrollSpeed);
-            yield return null;
-        }
-
-        scrollRect.verticalNormalizedPosition = 0f;
     }
 }

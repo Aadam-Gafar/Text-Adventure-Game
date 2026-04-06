@@ -31,7 +31,7 @@ LIST puzzle_solution = lever_one, lever_two, lever_three, lever_four
 === introduction ===
 ~ player_name = "Delver" // ~ means execute code (change variables, etc.)
 
-In the bitter cold of Skyrim's northern reaches, beyond the frozen wastes where even the frost trolls dare not tread, you stand before an entrance carved into living stone. The architecture speaks of an age long past, when the Dwemer—the Deep Folk, the Lost Race—wrought marvels that modern mages can scarce comprehend.
+In the bitter cold of Skyrim's northern reaches, beyond the frozen wastes where even the frost trolls dare not tread, you stand before an entrance carved into living stone. The architecture speaks of an age long past, when the Dwemer - the Deep Folk, the Lost Race - wrought marvels that modern mages can scarce comprehend.
 
 The great bronze doors, untouched by verdigris despite uncounted centuries, bear inscriptions in the angular script of their makers. A low hum emanates from within, as if the very mountain dreams in mechanical rhythm.
 
@@ -73,7 +73,7 @@ You trace the sharp-edged runes with cold-numbed fingers. Though you possess no 
 # SOUND: facility_ambience
 # MUSIC: dwemer_theme
 
-The doors swing inward with a sound like distant thunder. Before you stretches a hall of impossible construction—not hewn from stone, but rather grown, as if the mountain itself had been convinced to take this shape. Great brass pipes run along the walls, still bearing warmth though no flame has burned here for three thousand years.
+The doors swing inward with a sound like distant thunder. Before you stretches a hall of impossible construction - not hewn from stone, but rather grown, as if the mountain itself had been convinced to take this shape. Great brass pipes run along the walls, still bearing warmth though no flame has burned here for three thousand years.
 
 Ahead, the corridor branches: leftward toward a flickering blue light, rightward into darkness whence comes the grinding of ancient gears.
 
@@ -93,7 +93,7 @@ Your strength returns.
 
 = return_to_entrance
 // GATHER POINT - Ink flows through choices until it hits another choice or ->
-You retreat to the entrance. The doors remain open, inviting or warning—you cannot say which.
+You retreat to the entrance. The doors remain open, inviting or warning - you cannot say which.
 + [Re-enter] -> enter_facility
 + [Leave this place] -> coward_ending
 
@@ -103,7 +103,7 @@ You retreat to the entrance. The doors remain open, inviting or warning—you ca
 # LIGHT: blue_glow
 
 // ALTERNATIVES - Cycle through text on repeated visits using { } with |
-{You enter|You return to|Once more, you find yourself in} a chamber where blue flames dance in suspension, casting no heat yet bright as summer sky. Worktables of strange alloy hold apparatus whose purpose you can only guess—crystalline vessels, coiled tubes of untarnished brass, and mechanisms of such delicate construction that they seem gossamer-wrought.
+{You enter|You return to|Once more, you find yourself in} a chamber where blue flames dance in suspension, casting no heat yet bright as summer sky. Worktables of strange alloy hold apparatus whose purpose you can only guess - crystalline vessels, coiled tubes of untarnished brass, and mechanisms of such delicate construction that they seem gossamer-wrought.
 
 // SEQUENCE - Use shuffle for random, cycle for sequential, once for one-time
 {shuffle:
@@ -133,7 +133,7 @@ You retreat to the entrance. The doors remain open, inviting or warning—you ca
 
 = examine_flames
 // INLINE CONDITIONS with alternative text
-The flames {power_restored: burn brighter now, almost jubilant|flicker weakly, as if starved of some essential sustenance}. You extend your hand slowly—the fire dances away, neither hot nor cold, existing in defiance of natural law.
+The flames {power_restored: burn brighter now, almost jubilant|flicker weakly, as if starved of some essential sustenance}. You extend your hand slowly - the fire dances away, neither hot nor cold, existing in defiance of natural law.
 
 {not (inventory ? soul_gem):
     Wait. Nestled among the alchemical equipment, you spy a soul gem, pulsing with trapped luminescence.
@@ -149,7 +149,7 @@ You peer into a crystalline vessel. Within, you see not your reflection but rath
 ~ knowledge_level++
 
 {knowledge_level >= MAX_KNOWLEDGE:
-    Suddenly, understanding floods through you. These are not mere decorations—they are formulae, expressions of fundamental laws encoded in visual form. The Dwemer sought to reduce all existence to mechanism and mathematics.
+    Suddenly, understanding floods through you. These are not mere decorations - they are formulae, expressions of fundamental laws encoded in visual form. The Dwemer sought to reduce all existence to mechanism and mathematics.
 }
 
 + [Step back] -> laboratory
@@ -180,13 +180,13 @@ The levers lock into place with a satisfying click. The crystalline display flar
 + [Witness the awakening] -> power_restored_sequence
 
 = puzzle_failure
-The levers resist your manipulation, and a warning tone—musical yet unsettling—echoes through the chamber.
+The levers resist your manipulation, and a warning tone - musical yet unsettling - echoes through the chamber.
 
 + [Try again] -> puzzle_start
 + [Give up for now] -> laboratory
 
 = power_restored_sequence
-Light blooms throughout the facility—not the warm glow of fire, but the cold radiance of captured lightning. The pipes along the walls begin to hum, harmonizing in deep tones that you feel in your bones.
+Light blooms throughout the facility - not the warm glow of fire, but the cold radiance of captured lightning. The pipes along the walls begin to hum, harmonizing in deep tones that you feel in your bones.
 
 Somewhere in the depths, something massive awakens.
 
@@ -199,9 +199,9 @@ Somewhere in the depths, something massive awakens.
 
 // MULTILINE ALTERNATIVES - Complex variations based on state
 {power_restored:
-    The chamber blazes with light now, revealing the full scope of Dwemer artifice. Great wheels of bronze turn in precise alignment, driving mechanisms whose purpose sprawls beyond comprehension. This is not mere machinery—it is a mechanical philosophy, a prayer rendered in gear and piston.
+    The chamber blazes with light now, revealing the full scope of Dwemer artifice. Great wheels of bronze turn in precise alignment, driving mechanisms whose purpose sprawls beyond comprehension. This is not mere machinery - it is a mechanical philosophy, a prayer rendered in gear and piston.
 - else:
-    In the dimness, you discern vast shapes—wheels and pistons, assemblies of parts fitted with inhuman precision. All lies still and silent, waiting.
+    In the dimness, you discern vast shapes - wheels and pistons, assemblies of parts fitted with inhuman precision. All lies still and silent, waiting.
 }
 
 In the chamber's heart stands a Dwemer Centurion, a construct of brass and dwemer-metal standing thrice the height of a man. {centurion_hostile: Its ocular apparatus tracks your movement with ominous intent.|It stands motionless, no longer registering your presence as threat.}
@@ -214,7 +214,7 @@ In the chamber's heart stands a Dwemer Centurion, a construct of brass and dweme
 + [Retreat carefully] -> enter_facility
 
 = examine_machinery
-You study the mechanisms with new eyes. {knowledge_level >= 2: You begin to understand—this entire facility is not a dwelling but a engine, and all its components exist to serve some grand, inscrutable purpose.}
+You study the mechanisms with new eyes. {knowledge_level >= 2: You begin to understand - this entire facility is not a dwelling but a engine, and all its components exist to serve some grand, inscrutable purpose.}
 
 {not (inventory ? dwemer_cog):
     Wedged between two great gears, you find a dwemer cog, perfectly preserved.
@@ -227,7 +227,7 @@ You study the mechanisms with new eyes. {knowledge_level >= 2: You begin to unde
 = repair_centurion
 With trembling hands, you insert the cog into the maintenance panel. For a moment, nothing. Then, with a sound like a great breath drawn, the centurion's systems engage.
 
-Its ocular lenses focus upon you—but this time, you sense recognition rather than threat.
+Its ocular lenses focus upon you - but this time, you sense recognition rather than threat.
 
 ~ centurion_hostile = false
 ~ knowledge_level++
@@ -274,7 +274,7 @@ You barely evade, feeling the displacement of air as the blow passes. This entit
 === library ===
 # LOCATION: Archives
 
-You enter a library where knowledge stands shelved in forms unknown to surface-dwellers—not bound tomes, but rather crystalline data cores that pulse with inner light.
+You enter a library where knowledge stands shelved in forms unknown to surface-dwellers - not bound tomes, but rather crystalline data cores that pulse with inner light.
 
 {not (inventory ? attunement_crystal):
     Upon a pedestal, an attunement crystal radiates soft luminescence.
@@ -312,11 +312,11 @@ They did not die. They did not transcend. They simply... ceased to be present.
 + [A sobering revelation] -> library
 
 = facility_purpose
-You access a core labeled with maintenance glyphs. Within, you find schematics—not of the facility itself, but of something far vaster. This structure was but a single component in a mechanism that spanned all of Tamriel.
+You access a core labeled with maintenance glyphs. Within, you find schematics - not of the facility itself, but of something far vaster. This structure was but a single component in a mechanism that spanned all of Tamriel.
 
 ~ knowledge_level++
 
-What were they building? Or perhaps more terrifying—what were they becoming?
+What were they building? Or perhaps more terrifying - what were they becoming?
 
 + [You've seen enough] -> library
 
@@ -325,7 +325,7 @@ What were they building? Or perhaps more terrifying—what were they becoming?
 === describe_dwemer_philosophy ===
 The cores reveal their secrets grudgingly. The Dwemer, you learn, rejected the divine, viewing gods not as beings worthy of worship but as forces to be understood and, ultimately, surpassed. They sought to unmake the very fabric of reality, to replace the Dream with something of their own rational devising.
 
-Every soul, every thought, every mote of consciousness—all were to be integrated into a god-machine of their own construction.
+Every soul, every thought, every mote of consciousness - all were to be integrated into a god-machine of their own construction.
 ->->
 
 // === USE SOUL GEM PATH ===
@@ -347,7 +347,7 @@ You descend into the facility's deepest reaches, where the machinery grows impos
 // THREAD - Run content in parallel, can weave between multiple threads
 <- status_update // This weaves in periodic updates
 
-This was no mere dwelling, no simple mine or workshop. The entire mountain had been hollowed and filled with a single vast mechanism—a component in some greater engine whose scale beggars comprehension.
+This was no mere dwelling, no simple mine or workshop. The entire mountain had been hollowed and filled with a single vast mechanism - a component in some greater engine whose scale beggars comprehension.
 
 // CONDITIONAL BRANCH based on your knowledge
 {knowledge_level >= MAX_KNOWLEDGE:
@@ -389,11 +389,11 @@ This was no mere dwelling, no simple mine or workshop. The entire mountain had b
 === enlightened_ending ===
 # ENDING: enlightened
 
-You understand now. The Dwemer did not vanish—they achieved exactly what they intended. Every soul, every mind, every spark of consciousness was integrated into their great work.
+You understand now. The Dwemer did not vanish - they achieved exactly what they intended. Every soul, every mind, every spark of consciousness was integrated into their great work.
 
 They became the machine. They became the Dream. They became a god that denies godhood.
 
-And in understanding this, you realize with creeping horror that the facility has been studying you just as you have studied it. The mechanisms hum a different note now—curious, interested, welcoming.
+And in understanding this, you realize with creeping horror that the facility has been studying you just as you have studied it. The mechanisms hum a different note now - curious, interested, welcoming.
 
 It wants you to join them.
 
@@ -401,12 +401,12 @@ It wants you to join them.
 + [Accept your place in the machine] -> transcendence_ending
 
 = resist_ending
-You flee upward through the corridors, the facility's hum changing to something that might be disappointment—or might be patience. It has waited three thousand years. It can wait longer.
+You flee upward through the corridors, the facility's hum changing to something that might be disappointment - or might be patience. It has waited three thousand years. It can wait longer.
 
 -> epilogue
 
 = transcendence_ending
-You place your hand upon the central mechanism, and understanding flowers. Not painful—never painful. Simply... clarity.
+You place your hand upon the central mechanism, and understanding flowers. Not painful - never painful. Simply... clarity.
 
 You are bronze. You are logic. You are eternal.
 
@@ -435,7 +435,7 @@ You walk away from the bronze doors, which close behind you with terrible finali
 === death_ending ===
 # ENDING: death
 
-The centurion's blow strikes true. As darkness claims you, your final thought is that perhaps the Dwemer had the right idea—flesh is weak, bronze endures.
+The centurion's blow strikes true. As darkness claims you, your final thought is that perhaps the Dwemer had the right idea - flesh is weak, bronze endures.
 
 ~ health = 0
 
@@ -446,7 +446,7 @@ The centurion's blow strikes true. As darkness claims you, your final thought is
 
 You emerge into Skyrim's bitter cold, and the frozen wind has never felt more welcome. Behind you, the bronze doors stand sentinel, and within, the mechanisms hum their ancient song.
 
-You carry with you {inventory}: tangible proofs of your delving. But more than these, you bear knowledge—dangerous, seductive knowledge of a race that looked upon the gods and found them wanting.
+You carry with you {inventory}: tangible proofs of your delving. But more than these, you bear knowledge - dangerous, seductive knowledge of a race that looked upon the gods and found them wanting.
 
 The question that haunts you as you trek through the snow: were the Dwemer wise beyond measure, or were they the most foolish beings ever to walk Nirn?
 
