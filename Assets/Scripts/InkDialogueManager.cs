@@ -1,9 +1,25 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 using Ink.Runtime;
 using System.Collections;
 using System.Collections.Generic;
+using System;
+
+[Serializable]
+public class StoryHistoryItem
+{
+    public string text;
+    public bool isChoice;
+}
+
+[Serializable]
+public class GameSaveData
+{
+    public string inkState;
+    public List<StoryHistoryItem> history;
+}
 
 public class InkDialogueManager : MonoBehaviour
 {
@@ -11,24 +27,42 @@ public class InkDialogueManager : MonoBehaviour
     [SerializeField] private TextAsset inkJsonAsset;
 
     [Header("UI References")]
-    [SerializeField] private GameObject contentPanel; // The Content object inside ScrollView
+    [SerializeField] private GameObject contentPanel;
     [SerializeField] private ScrollRect scrollRect;
     [SerializeField] private GameObject storyTextPrefab;
     [SerializeField] private GameObject choiceButtonPrefab;
+    [SerializeField] private Button menuButton;
 
     [Header("Settings")]
     [SerializeField] private float autoScrollSpeed = 0.3f;
 
     private Story story;
     private List<GameObject> currentChoiceButtons = new List<GameObject>();
+    private List<StoryHistoryItem> storyHistory = new List<StoryHistoryItem>();
+    private const string SAVE_KEY = "InkGameSave";
+    private bool isLoadingGame = false;
 
     void Start()
     {
+        // Wire up menu button
+        if (menuButton != null)
+        {
+            menuButton.onClick.AddListener(OnMenuButtonClicked);
+        }
+
         // Initialize the story
         story = new Story(inkJsonAsset.text);
 
-        // Display the first content
-        ContinueStory();
+        // Try to load saved game
+        if (PlayerPrefs.HasKey(SAVE_KEY))
+        {
+            LoadGame();
+        }
+        else
+        {
+            // New game - display from start
+            ContinueStory();
+        }
     }
 
     void ContinueStory()
@@ -47,7 +81,7 @@ public class InkDialogueManager : MonoBehaviour
 
             if (!string.IsNullOrEmpty(text))
             {
-                AddStoryText(text);
+                AddStoryText(text, false);
             }
         }
 
@@ -59,21 +93,31 @@ public class InkDialogueManager : MonoBehaviour
         else
         {
             // Story has ended
-            AddStoryText("\n<i>(The End)</i>");
+            AddStoryText("\n<i>(The End)</i>", false);
+        }
+
+        // Save game state after each continuation
+        if (!isLoadingGame)
+        {
+            SaveGame();
         }
 
         // Auto-scroll to bottom after content is added
         StartCoroutine(ScrollToBottom());
     }
 
-    void AddStoryText(string text)
+    void AddStoryText(string text, bool isChoice = false)
     {
-        // Instantiate a new text block
         GameObject textObject = Instantiate(storyTextPrefab, contentPanel.transform);
         TextMeshProUGUI textComponent = textObject.GetComponent<TextMeshProUGUI>();
         textComponent.text = text;
 
-        // Force layout rebuild
+        // Add to history (only if not loading)
+        if (!isLoadingGame)
+        {
+            storyHistory.Add(new StoryHistoryItem { text = text, isChoice = isChoice });
+        }
+
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentPanel.GetComponent<RectTransform>());
     }
 
@@ -81,53 +125,97 @@ public class InkDialogueManager : MonoBehaviour
     {
         foreach (Choice choice in story.currentChoices)
         {
-            // Create a button for each choice
             GameObject button = Instantiate(choiceButtonPrefab, contentPanel.transform);
 
-            // Set the button text
             TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
             buttonText.text = choice.text;
 
-            // Add listener to handle choice selection
             Button buttonComponent = button.GetComponent<Button>();
-            int choiceIndex = choice.index; // Capture for closure
+            int choiceIndex = choice.index;
             buttonComponent.onClick.AddListener(() => OnChoiceSelected(choiceIndex));
 
             currentChoiceButtons.Add(button);
         }
 
-        // Force layout rebuild after adding choices
         LayoutRebuilder.ForceRebuildLayoutImmediate(contentPanel.GetComponent<RectTransform>());
     }
 
     void OnChoiceSelected(int choiceIndex)
     {
-        // Show the selected choice as text (so player sees what they chose)
         string chosenText = story.currentChoices[choiceIndex].text;
 
-        // Remove choice buttons
         foreach (GameObject button in currentChoiceButtons)
         {
             Destroy(button);
         }
         currentChoiceButtons.Clear();
 
-        // Display the choice that was made
-        AddStoryText($"<color=#FFD700>→ {chosenText}</color>");
+        AddStoryText($"<color=#FFD700>→ {chosenText}</color>", true);
 
-        // Tell the story which choice was selected
         story.ChooseChoiceIndex(choiceIndex);
 
-        // Continue the story
         ContinueStory();
+    }
+
+    void SaveGame()
+    {
+        GameSaveData saveData = new GameSaveData
+        {
+            inkState = story.state.ToJson(),
+            history = storyHistory
+        };
+
+        string saveJson = JsonUtility.ToJson(saveData);
+        PlayerPrefs.SetString(SAVE_KEY, saveJson);
+        PlayerPrefs.Save();
+    }
+
+    void LoadGame()
+    {
+        isLoadingGame = true;
+
+        string saveJson = PlayerPrefs.GetString(SAVE_KEY);
+        GameSaveData saveData = JsonUtility.FromJson<GameSaveData>(saveJson);
+
+        // Restore Ink state
+        story.state.LoadJson(saveData.inkState);
+
+        // Clear existing content
+        foreach (Transform child in contentPanel.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // Restore history
+        storyHistory = saveData.history;
+        foreach (StoryHistoryItem item in storyHistory)
+        {
+            GameObject textObject = Instantiate(storyTextPrefab, contentPanel.transform);
+            TextMeshProUGUI textComponent = textObject.GetComponent<TextMeshProUGUI>();
+            textComponent.text = item.text;
+        }
+
+        LayoutRebuilder.ForceRebuildLayoutImmediate(contentPanel.GetComponent<RectTransform>());
+
+        isLoadingGame = false;
+
+        // Display current choices
+        ContinueStory();
+    }
+
+    void OnMenuButtonClicked()
+    {
+        // Save before returning to menu
+        SaveGame();
+
+        // Load main menu
+        SceneManager.LoadScene("MainMenu");
     }
 
     IEnumerator ScrollToBottom()
     {
-        // Wait for end of frame to ensure layout is updated
         yield return new WaitForEndOfFrame();
 
-        // Smoothly scroll to bottom
         float elapsedTime = 0f;
         float startValue = scrollRect.verticalNormalizedPosition;
 
