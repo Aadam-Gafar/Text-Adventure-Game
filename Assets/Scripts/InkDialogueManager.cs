@@ -150,7 +150,7 @@ public class InkDialogueManager : MonoBehaviour
         }
         currentChoiceButtons.Clear();
 
-        AddStoryText($"<color=#FFD700>→ {chosenText}</color>", true);
+        AddStoryText($"<color=#000652>> {chosenText}</color>", true);
 
         story.ChooseChoiceIndex(choiceIndex);
 
