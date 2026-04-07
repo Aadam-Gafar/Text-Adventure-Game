@@ -11,10 +11,31 @@ A browser-based interactive fiction framework built on [Ink](https://www.inklest
 
 ## Features
 
-- Branching narrative with persistent save state
-- Checkpoint / rewind system
-- Background music tied to story beats
-- Adjustable font size, OpenDyslexic toggle, light/dark theme
+### Narrative
+- Branching narrative with persistent save state (localStorage)
+- Checkpoint / rewind system - story can tag checkpoints with `# CHECKPOINT`; the rewind button restores full state including music
+- Keyboard shortcuts: press 1–9 to select choices
+
+### Music
+- Background music tied to story beats via `# MUSIC: trackname` tags
+- Smooth fade in/out on track transitions - no overlapping playback
+- Volume control cycling through four levels (100%, 66%, 33%, muted), persisted across sessions
+
+### UI
+- Light/dark theme toggle, persisted across sessions
+- OpenDyslexic font toggle, persisted across sessions
+- Adjustable font size (zoom in/out), persisted across sessions
+- Scroll-to-bottom floating button with enter/exit animations
+- Restart confirmation modal to prevent accidental progress loss
+
+## Ink story tags
+
+The engine responds to the following tags in `story.ink`:
+
+| Tag | Effect |
+|---|---|
+| `# MUSIC: trackname` | Fades in `assets/trackname.mp3`, fading out the current track first |
+| `# CHECKPOINT` | Snapshots story state, history, and current music track for rewind |
 
 ## Running it
 
@@ -22,7 +43,7 @@ Serve the project root over HTTP (e.g. `python -m http.server 8000`) and open `i
 
 ## Extending it
 
-To swap in a new story, edit `story.ink` with [Ink](https://github.com/inkle/ink/releases) and export it to `story.json`.
+To swap in a new story, edit `story.ink` with the [Ink editor](https://github.com/inkle/ink/releases) and export it to `story.json`. Use the tags above to add music and checkpoints.
 
 ## Roadmap
 

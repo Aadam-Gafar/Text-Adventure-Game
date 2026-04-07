@@ -237,6 +237,7 @@ main::-webkit-scrollbar-thumb:hover {
     padding-top: 1.5rem;
     border-top: 1px solid var(--border);
     position: relative;
+    counter-reset: choice-counter;
 }
 
 .choices.first-choices {
@@ -285,8 +286,12 @@ main::-webkit-scrollbar-thumb:hover {
 .choice-btn:nth-child(4) { animation-delay: 0.44s; }
 .choice-btn:nth-child(5) { animation-delay: 0.57s; }
 
+.choice-btn {
+    counter-increment: choice-counter;
+}
+
 .choice-btn::before {
-    content: '→';
+    content: counter(choice-counter) '.';
     font-style: normal;
     margin-right: 0.6em;
     color: var(--sepia-light);
