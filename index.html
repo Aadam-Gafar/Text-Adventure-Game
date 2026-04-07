@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="An interactive Dwemer facility exploration in Skyrim">
+    <title>The Dwemer Facility</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <button id="menu-btn" aria-label="Open menu">☰</button>
+            <h1>The Dwemer Facility</h1>
+        </header>
+
+        <!-- Main story area -->
+        <main id="story-container" role="main">
+            <!-- Story text and choices append here dynamically -->
+        </main>
+
+        <!-- Menu overlay (hidden by default) -->
+        <div id="menu-overlay" class="hidden" role="dialog" aria-modal="true">
+            <div class="menu-panel">
+                <h2>Menu</h2>
+                <button id="new-game-btn">New Game</button>
+                <button id="continue-btn" disabled>Continue</button>
+                <button id="close-menu-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load inkjs locally -->
+    <script src="ink.js"></script>
+    <!-- Load our app -->
+    <script src="app.js"></script>
+</body>
+</html>
