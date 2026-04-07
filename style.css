@@ -506,6 +506,11 @@ main::-webkit-scrollbar-thumb:hover {
     .story-text {
         font-size: var(--font-size-story); /* Changed from 0.95rem */
     }
+
+    .scroll-bottom-btn {
+        bottom: 1rem;
+        right: 1rem;
+    }
 }
 
 @media (min-width: 768px) {
