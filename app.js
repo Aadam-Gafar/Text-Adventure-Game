@@ -10,6 +10,32 @@ const SAVE_KEY = 'dwemer_facility_save';
 let story;
 let storyHistory = [];
 
+// Checkpoint snapshot
+let checkpointInkState = null;
+let checkpointHistoryLength = 0;
+
+// Music
+let currentAudio = null;
+let currentTrack = null;
+
+function playMusic(trackName) {
+    console.log('[playMusic] requested:', trackName, '| current:', currentTrack);
+    if (currentTrack === trackName) return;
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+    }
+    currentTrack = trackName;
+    currentAudio = new Audio(`assets/${trackName}.mp3`);
+    currentAudio.loop = true;
+    currentAudio.volume = 0.5;
+    currentAudio.play().then(() => {
+        console.log('[playMusic] playing:', trackName);
+    }).catch(err => {
+        console.error('[playMusic] failed:', trackName, err);
+    });
+}
+
 /**
  * Initialize the application
  */
@@ -51,6 +77,8 @@ function startNewGame() {
     // Clear save and history
     localStorage.removeItem(SAVE_KEY);
     storyHistory = [];
+    checkpointInkState = null;
+    checkpointHistoryLength = 0;
     storyContainer.innerHTML = '';
 
     // Reset story to beginning
@@ -82,6 +110,10 @@ function loadGame() {
         // Clear container
         storyContainer.innerHTML = '';
 
+        // Restore checkpoint snapshot
+        checkpointInkState = saveData.checkpointInkState || null;
+        checkpointHistoryLength = saveData.checkpointHistoryLength || 0;
+
         // Restore history
         storyHistory = saveData.history || [];
         storyHistory.forEach(item => {
@@ -112,6 +144,8 @@ function saveGame() {
         const saveData = {
             inkState: story.state.ToJson(),
             history: storyHistory,
+            checkpointInkState: checkpointInkState,
+            checkpointHistoryLength: checkpointHistoryLength,
             timestamp: Date.now()
         };
         localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
@@ -133,9 +167,19 @@ function continueStory() {
 
     // Read all available story content
     while (story.canContinue) {
+        const wasCheckpointed = story.variablesState['cp_power_restored'];
         const text = story.Continue().trim();
+        for (const tag of story.currentTags) {
+            const musicMatch = tag.match(/^MUSIC:\s*(\S+)$/);
+            if (musicMatch) playMusic(musicMatch[1]);
+        }
         if (text) {
             addStoryText(text, true);
+        }
+        // Capture snapshot the moment the checkpoint fires
+        if (!wasCheckpointed && story.variablesState['cp_power_restored']) {
+            checkpointInkState = story.state.ToJson();
+            checkpointHistoryLength = storyHistory.length;
         }
     }
 
@@ -154,6 +198,7 @@ function continueStory() {
  * Add story text to the container
  */
 function addStoryText(text, addToHistory = true) {
+
     const p = document.createElement('p');
     p.className = 'story-text';
     p.textContent = text;
@@ -213,38 +258,31 @@ function handleChoiceClick(choice, index) {
 }
 
 /**
- * Handle rewind button — load the last checkpoint
+ * Handle rewind button — strip everything after the checkpoint and restore choices
  */
 function handleRewind() {
-    const checkpointName = story.variablesState['checkpoint_name'];
-    if (!checkpointName) return;
+    if (!checkpointInkState) return;
 
-    // Restore checkpoint variables in Ink state
-    story.EvaluateFunction('load_checkpoint', [], false);
+    // Restore ink state to checkpoint moment
+    story.state.LoadJson(checkpointInkState);
 
-    // Map checkpoint name to knot path
-    const knotMap = {
-        'Entrance Hall':         'enter_facility',
-        'Laboratory Discovered': 'laboratory',
-        'Power Restored':        'enter_facility',
-        'Library Accessed':      'library',
-        'Depths Entered':        'depths',
-    };
-    const knot = knotMap[checkpointName] || 'enter_facility';
+    // Trim history and DOM back to checkpoint
+    storyHistory = storyHistory.slice(0, checkpointHistoryLength);
+    const existingChoices = storyContainer.querySelector('.choices');
+    if (existingChoices) existingChoices.remove();
+    while (storyContainer.children.length > checkpointHistoryLength) {
+        storyContainer.removeChild(storyContainer.lastChild);
+    }
 
-    // Clear display and history, then divert to checkpoint location
-    storyContainer.innerHTML = '';
-    storyHistory = [];
-    story.ChoosePathString(knot);
-    continueStory();
+    // Show the choices that were available at the checkpoint
+    displayChoices();
 }
 
 /**
- * Update rewind button state based on whether a checkpoint exists
+ * Update rewind button state based on whether a checkpoint snapshot exists
  */
 function updateRewindButton() {
-    const hasCheckpoint = story.variablesState['checkpoint_name'] !== '';
-    rewindBtn.disabled = !hasCheckpoint;
+    rewindBtn.disabled = !checkpointInkState;
 }
 
 /**

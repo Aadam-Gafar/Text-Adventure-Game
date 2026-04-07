@@ -27,13 +27,13 @@ VAR cp_power_restored = false
 
 // === CHECKPOINT DISPLAY ===
 === show_cp_saved ===
-<b>═══ CHECKPOINT ═══</b>
+═══ CHECKPOINT ═══
 ->->
 
 // === KNOTS - Major story sections ===
 
 === introduction ===
-# music: skyrim_music
+# MUSIC: skyrim_music
 In the bitter cold of skyrim, you find a ruined Dwemer facility.
 
 * [Enter the facility] 
@@ -42,9 +42,9 @@ In the bitter cold of skyrim, you find a ruined Dwemer facility.
 // === MAIN FACILITY KNOT ===
 === enter_facility ===
 {not power_restored:
-    # music: ruin_music
+    # MUSIC: ruin_music
 - else:
-    # music: dwemer_music
+    # MUSIC: dwemer_music
 }
 
 {first_visit:
@@ -94,6 +94,9 @@ You put the key into the button's keyhole and turn it. Light blooms throughout t
     
 - else:
     The chamber blazes with light now, revealing great wheels of bronze that turn in precise alignment. In the chamber's heart stands a Dwemer Centurion, a construct of brass and dwemer-metal standing thrice the height of a man. He looks like he's trying to speak.
+    
+    ~ save_checkpoint()
+    -> show_cp_saved ->
 
     + [Listen to what he has to say] -> hello_world
 }
