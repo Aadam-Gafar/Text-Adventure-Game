@@ -8,6 +8,9 @@
 }
 
 :root {
+    --font-size-story:  1.1rem;
+    --font-size-choice: 1rem;
+    --font-size-player: 1.05rem;
     --parchment:       #f5ead6;
     --parchment-mid:   #ecdfc4;
     --parchment-dark:  #e0ccaa;
@@ -180,7 +183,7 @@ main::-webkit-scrollbar-thumb:hover {
 
 .story-text {
     margin-bottom: 1.5rem;
-    font-size: 1.1rem;
+    font-size: var(--font-size-story);
     color: var(--ink);
     white-space: pre-wrap;
     text-align: justify;
@@ -204,7 +207,7 @@ main::-webkit-scrollbar-thumb:hover {
     color: var(--sepia);
     margin-bottom: 1.5rem;
     font-style: italic;
-    font-size: 1.05rem;
+    font-size: var(--font-size-player);
     padding-left: 1.2rem;
     border-left: 2px solid var(--border);
     animation: manuscript-reveal 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) both;
@@ -249,7 +252,7 @@ main::-webkit-scrollbar-thumb:hover {
     padding: 0.9rem 1.25rem;
     text-align: left;
     font-family: 'IM Fell English', Georgia, serif;
-    font-size: 1rem;
+    font-size: var(--font-size-choice);
     line-height: 1.55;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -290,6 +293,24 @@ main::-webkit-scrollbar-thumb:hover {
 
 .choice-btn:last-child {
     margin-bottom: 5rem;
+}
+
+/* ── OpenDyslexic mode ───────────────────────────── */
+
+[data-font="dyslexic"] body,
+[data-font="dyslexic"] .story-text,
+[data-font="dyslexic"] .player-choice,
+[data-font="dyslexic"] .choice-btn {
+    font-family: 'OpenDyslexic', sans-serif;
+}
+
+[data-font="dyslexic"] header h1 {
+    font-family: 'OpenDyslexic', sans-serif;
+    font-style: normal;
+}
+
+[data-font="dyslexic"] .story-text:first-child::first-letter {
+    font-family: 'OpenDyslexic', sans-serif;
 }
 
 /* ── Loading / error ─────────────────────────────── */

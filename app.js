@@ -3,10 +3,15 @@ const storyContainer = document.getElementById('story-container');
 const restartBtn = document.getElementById('restart-btn');
 const rewindBtn = document.getElementById('rewind-btn');
 const themeBtn = document.getElementById('theme-btn');
+const dyslexicBtn  = document.getElementById('dyslexic-btn');
+const zoomInBtn    = document.getElementById('zoom-in-btn');
+const zoomOutBtn   = document.getElementById('zoom-out-btn');
 
 // Storage key
 const SAVE_KEY = 'dwemer_facility_save';
 const THEME_KEY = 'dwemer_theme';
+const FONT_KEY  = 'dwemer_font';
+const SIZE_KEY  = 'dwemer_font_size';
 
 // Theme
 function applyTheme(dark) {
@@ -15,14 +20,49 @@ function applyTheme(dark) {
 }
 
 (function initTheme() {
-    const saved = localStorage.getItem(THEME_KEY);
-    applyTheme(saved === 'dark');
+    applyTheme(localStorage.getItem(THEME_KEY) === 'dark');
 })();
 
 themeBtn.addEventListener('click', () => {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    applyTheme(!isDark);
+    applyTheme(document.documentElement.getAttribute('data-theme') !== 'dark');
 });
+
+// Dyslexic font
+function applyFont(dyslexic) {
+    document.documentElement.setAttribute('data-font', dyslexic ? 'dyslexic' : '');
+    localStorage.setItem(FONT_KEY, dyslexic ? 'dyslexic' : 'default');
+}
+
+(function initFont() {
+    applyFont(localStorage.getItem(FONT_KEY) === 'dyslexic');
+})();
+
+dyslexicBtn.addEventListener('click', () => {
+    applyFont(document.documentElement.getAttribute('data-font') !== 'dyslexic');
+});
+
+// Font size
+const FONT_SIZE_MIN     = 0.8;
+const FONT_SIZE_MAX     = 1.8;
+const FONT_SIZE_STEP    = 0.1;
+const FONT_SIZE_DEFAULT = 1.1;
+
+function applyFontSize(size) {
+    const s = Math.min(FONT_SIZE_MAX, Math.max(FONT_SIZE_MIN, size));
+    const root = document.documentElement;
+    root.style.setProperty('--font-size-story',  s + 'rem');
+    root.style.setProperty('--font-size-choice', (s - 0.1) + 'rem');
+    root.style.setProperty('--font-size-player', (s - 0.05) + 'rem');
+    localStorage.setItem(SIZE_KEY, s);
+    zoomOutBtn.disabled = s <= FONT_SIZE_MIN;
+    zoomInBtn.disabled  = s >= FONT_SIZE_MAX;
+    return s;
+}
+
+let currentFontSize = applyFontSize(parseFloat(localStorage.getItem(SIZE_KEY)) || FONT_SIZE_DEFAULT);
+
+zoomInBtn.addEventListener('click',  () => { currentFontSize = applyFontSize(Math.round((currentFontSize + FONT_SIZE_STEP) * 10) / 10); });
+zoomOutBtn.addEventListener('click', () => { currentFontSize = applyFontSize(Math.round((currentFontSize - FONT_SIZE_STEP) * 10) / 10); });
 
 // State
 let story;
