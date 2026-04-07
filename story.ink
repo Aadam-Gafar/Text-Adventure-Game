@@ -118,15 +118,15 @@ They are the metal children of the Deep Folk. One among them looms larger than t
 
 The air is cold and the silence is absolute, save for the thrumming of the pipes behind you. To step further into the black is to walk into the mouth of a mountain that has forgotten the sun. It is too dark to continue.
 
-{!has_key: Yet, as you look down, a spark of something catches the dying blue light from the hallway. There, half-buried in the dust of the stone floor, lies a glint of brass. You reach down and brush away the grime of centuries. It is a key - heavy, etched with the sharp, geometric script of the Dwemer, and cold as the ice of the Sea of Ghosts. It lies in your palm with a strange weight, a small piece of order in a world of ruin.}
+{not has_key: Yet, as you look down, a spark of something catches the dying blue light from the hallway. There, half-buried in the dust of the stone floor, lies a glint of brass. You reach down and brush away the grime of centuries. It is a key - heavy, etched with the sharp, geometric script of the Dwemer, and cold as the ice of the Sea of Ghosts. It lies in your palm with a strange weight, a small piece of order in a world of ruin.}
     
-    + {!has_key} [Pick up the key] 
+    + {not has_key} [Pick up the key] 
         ~ has_key = true
         You pick up the key. 
         
         -> set_checkpoint ->
         -> enter_facility
-    + {!has_key} [Leave the key] -> enter_facility
+    + {not has_key} [Leave the key] -> enter_facility
     + [Leave this chamber] -> enter_facility
     
 - else:

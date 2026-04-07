@@ -59,6 +59,7 @@ body {
 }
 
 .container {
+    position: relative;
     max-width: 780px;
     margin: 0 auto;
     height: 100vh;
@@ -382,6 +383,71 @@ main::-webkit-scrollbar-thumb:hover {
     .choice-btn {
         padding: 1rem 1.5rem;
     }
+}
+
+/* ── Scroll-to-bottom button ─────────────────────── */
+
+@keyframes scroll-btn-appear {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scroll-btn-disappear {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+}
+
+.scroll-bottom-btn.is-hiding {
+    animation: scroll-btn-disappear 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+}
+
+.scroll-bottom-btn {
+    position: absolute;
+    bottom: 2rem;
+    right: 1.25rem;
+    background: var(--parchment-mid);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 12px rgba(80, 50, 10, 0.18);
+    transition: background 0.2s, border-color 0.2s;
+    animation: scroll-btn-appear 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+    z-index: 5;
+}
+
+.scroll-bottom-btn[hidden] {
+    display: none;
+}
+
+.scroll-bottom-btn img {
+    filter: sepia(1) hue-rotate(10deg) brightness(0.55);
+    transition: filter 0.2s;
+}
+
+.scroll-bottom-btn:hover {
+    background: rgba(140, 100, 40, 0.12);
+    border-color: var(--sepia);
+}
+
+.scroll-bottom-btn:hover img {
+    filter: sepia(1) hue-rotate(10deg) brightness(0.4);
 }
 
 /* ── Restart modal ──────────────────────────────── */

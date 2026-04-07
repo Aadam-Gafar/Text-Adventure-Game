@@ -488,6 +488,41 @@ function showError(message) {
 }
 
 /**
+ * Scroll-to-bottom button
+ */
+const scrollBottomBtn = document.getElementById('scroll-bottom-btn');
+
+function showScrollBtn() {
+    scrollBottomBtn.classList.remove('is-hiding');
+    scrollBottomBtn.removeAttribute('hidden');
+    scrollBottomBtn.style.animationName = 'none';
+    scrollBottomBtn.offsetHeight; // force reflow to re-trigger entrance animation
+    scrollBottomBtn.style.animationName = '';
+}
+
+function hideScrollBtn() {
+    if (scrollBottomBtn.hasAttribute('hidden')) return;
+    scrollBottomBtn.classList.add('is-hiding');
+    scrollBottomBtn.addEventListener('animationend', () => {
+        scrollBottomBtn.classList.remove('is-hiding');
+        scrollBottomBtn.setAttribute('hidden', '');
+    }, { once: true });
+}
+
+storyContainer.addEventListener('scroll', () => {
+    const distanceFromBottom = storyContainer.scrollHeight - storyContainer.scrollTop - storyContainer.clientHeight;
+    if (distanceFromBottom > 80) {
+        if (scrollBottomBtn.hasAttribute('hidden')) showScrollBtn();
+    } else {
+        hideScrollBtn();
+    }
+});
+
+scrollBottomBtn.addEventListener('click', () => {
+    storyContainer.scrollTo({ top: storyContainer.scrollHeight, behavior: 'smooth' });
+});
+
+/**
  * Keyboard shortcuts
  */
 document.addEventListener('keydown', (e) => {
