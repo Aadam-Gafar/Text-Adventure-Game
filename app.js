@@ -6,6 +6,12 @@ const themeBtn = document.getElementById('theme-btn');
 const dyslexicBtn  = document.getElementById('dyslexic-btn');
 const zoomInBtn    = document.getElementById('zoom-in-btn');
 const zoomOutBtn   = document.getElementById('zoom-out-btn');
+const menuBtn      = document.getElementById('menu-btn');
+
+// Mobile menu toggle
+menuBtn.addEventListener('click', () => {
+    document.querySelector('header').classList.toggle('menu-open');
+});
 
 // Storage key
 const SAVE_KEY = 'dwemer_facility_save';

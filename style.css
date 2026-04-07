@@ -100,6 +100,7 @@ header::after {
     flex-shrink: 0;
     margin-right: 0.5rem;
     filter: sepia(1) hue-rotate(10deg) brightness(0.55);
+    transition: opacity 0.25s ease;
 }
 
 header h1 {
@@ -343,6 +344,12 @@ main::-webkit-scrollbar-thumb:hover {
     font-size: 1.05rem;
 }
 
+/* ── Mobile menu button (hidden on desktop) ──────── */
+
+.mobile-menu-btn {
+    display: none;
+}
+
 /* ── Mobile ──────────────────────────────────────── */
 
 @media (max-width: 600px) {
@@ -351,9 +358,80 @@ main::-webkit-scrollbar-thumb:hover {
     }
 
     header h1 {
-        font-size: 1.15rem;
+        display: none;
     }
 
+    /* 1. Keep the container pushed to the right at all times */
+.header-actions {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    /* Ensure the container grows from right-to-left */
+    justify-content: flex-end; 
+}
+
+/* Icon buttons: collapsed to zero width, invisible */
+.header-btn:not(.mobile-menu-btn) {
+    max-width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+    transition: max-width 0.25s ease, padding-left 0.25s ease,
+                padding-right 0.25s ease, opacity 0.2s ease,
+                background 0.2s, color 0.2s;
+}
+
+/* Closing stagger: ripple right into menu btn */
+.header-actions .header-btn:nth-child(1) { transition-delay: 0ms; }
+.header-actions .header-btn:nth-child(2) { transition-delay: 25ms; }
+.header-actions .header-btn:nth-child(3) { transition-delay: 50ms; }
+.header-actions .header-btn:nth-child(4) { transition-delay: 75ms; }
+.header-actions .header-btn:nth-child(5) { transition-delay: 100ms; }
+.header-actions .header-btn:nth-child(6) { transition-delay: 125ms; }
+.header-actions .header-btn:nth-child(7) { transition-delay: 150ms; }
+
+.mobile-menu-btn {
+    display: flex;
+    order: 99; /* Always keep the menu button at the end (the right) */
+}
+
+/* Open state */
+header.menu-open .header-favicon {
+    opacity: 0;
+    pointer-events: none;
+}
+
+header.menu-open .header-actions {
+    /* REMOVED: flex: 1 and margin-left: 0 */
+    /* This keeps the container anchored to the right */
+    max-width: 100%; 
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+header.menu-open .header-actions::-webkit-scrollbar {
+    display: none;
+}
+
+header.menu-open .header-btn:not(.mobile-menu-btn) {
+    max-width: 44px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    opacity: 1;
+    pointer-events: auto;
+    flex-shrink: 0;
+}
+
+/* Opening stagger: rightmost icons (closest to menu btn) appear first */
+header.menu-open .header-actions .header-btn:nth-last-child(2) { transition-delay: 0ms; }
+header.menu-open .header-actions .header-btn:nth-last-child(3) { transition-delay: 25ms; }
+header.menu-open .header-actions .header-btn:nth-last-child(4) { transition-delay: 50ms; }
+header.menu-open .header-actions .header-btn:nth-last-child(5) { transition-delay: 75ms; }
+header.menu-open .header-actions .header-btn:nth-last-child(6) { transition-delay: 100ms; }
+header.menu-open .header-actions .header-btn:nth-last-child(7) { transition-delay: 125ms; }
+header.menu-open .header-actions .header-btn:nth-last-child(8) { transition-delay: 150ms; }
     main {
         padding: 1.75rem 1.25rem;
     }
