@@ -83,6 +83,7 @@ header {
     position: sticky;
     top: 0;
     z-index: 10;
+    overflow: visible;
 }
 
 header::after {
@@ -374,6 +375,7 @@ main::-webkit-scrollbar-thumb:hover {
 @media (max-width: 600px) {
     header {
         padding: 0.875rem 1.1rem;
+        position: relative;
     }
 
     header h1 {
@@ -439,6 +441,23 @@ main::-webkit-scrollbar-thumb:hover {
     header.menu-open .header-favicon {
         opacity: 0;
         pointer-events: none;
+    }
+
+    header.menu-open .header-actions {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: auto;
+        height: 100%;
+        background: var(--parchment-mid);
+        border-bottom: 2px solid var(--border);
+        overflow-x: auto;
+        overflow-y: hidden;
+        flex-wrap: nowrap;
+        width: 100vw;
+        justify-content: flex-end;
+        padding-right: 1.1rem;
     }
 
     header.menu-open .header-actions::-webkit-scrollbar {
