@@ -112,11 +112,21 @@ header h1 {
     color: var(--ink);
     text-transform: uppercase;
 }
-
 .header-actions {
     display: flex;
     align-items: center;
     gap: 0.25rem;
+
+    overflow-x: auto;          /* ← always allow horizontal scroll */
+    overflow-y: hidden;
+    flex-wrap: nowrap;         /* ← prevent wrapping */
+    -webkit-overflow-scrolling: touch;
+
+    scrollbar-width: none;     /* Firefox */
+}
+
+.header-actions::-webkit-scrollbar {
+    display: none;             /* Chrome/Safari */
 }
 
 .header-btn {
@@ -131,6 +141,7 @@ header h1 {
     align-items: center;
     justify-content: center;
     filter: sepia(1) hue-rotate(10deg) brightness(0.55);
+    flex-shrink: 0;
 }
 
 .header-btn:hover:not(:disabled) {
@@ -401,14 +412,6 @@ main::-webkit-scrollbar-thumb:hover {
 header.menu-open .header-favicon {
     opacity: 0;
     pointer-events: none;
-}
-
-header.menu-open .header-actions {
-    /* REMOVED: flex: 1 and margin-left: 0 */
-    /* This keeps the container anchored to the right */
-    max-width: 100%; 
-    overflow-x: auto;
-    scrollbar-width: none;
 }
 
 header.menu-open .header-actions::-webkit-scrollbar {
