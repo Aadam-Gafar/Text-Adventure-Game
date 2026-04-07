@@ -95,6 +95,12 @@ header::after {
     opacity: 0.4;
 }
 
+.header-favicon {
+    flex-shrink: 0;
+    margin-right: 0.5rem;
+    filter: sepia(1) hue-rotate(10deg) brightness(0.55);
+}
+
 header h1 {
     font-family: 'IM Fell Double Pica', Georgia, serif;
     font-size: 1.35rem;
