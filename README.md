@@ -56,3 +56,13 @@ To swap in a new story, edit `story.ink` with the [Ink editor](https://github.co
 - Stat system with stat checks (dice roll)
 - Expanded story with more branching paths and endings
 - More to come
+
+## Attributions
+
+### Icons
+- UI Icons provided by [Iconoir](https://iconoir.com/).
+
+### Music
+- `ruin_music.mp3`: [Crime Scene Horror Music](https://pixabay.com/music/crime-scene-horror-music-scary-piano-loop-465628/) by Sonican via Pixabay.
+- `dwemer_music.mp3`: [Suspense Synthetic Deception](https://pixabay.com/music/suspense-synthetic-deception-loopable-epic-cyberpunk-crime-music-157454/) by JoelFazhari via Pixabay.
+- `skyrim_music.mp3`: [Main Title Slavic Epic Loop](https://pixabay.com/music/main-title-slavic-epic-loop-368859/) by Ebunny via Pixabay.
