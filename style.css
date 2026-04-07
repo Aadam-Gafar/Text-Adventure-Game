@@ -437,12 +437,11 @@ header.menu-open .header-actions .header-btn:nth-last-child(8) { transition-dela
     }
 
     .story-text {
-        font-size: 1rem;
+        font-size: var(--font-size-story); /* Changed from 1rem */
     }
 
-    .choice-btn {
-        padding: 0.8rem 1rem;
-        font-size: 0.95rem;
+    .story-text {
+        font-size: var(--font-size-story); /* Changed from 1rem */
     }
 
     .story-text:first-child::first-letter {
@@ -456,7 +455,7 @@ header.menu-open .header-actions .header-btn:nth-last-child(8) { transition-dela
     }
 
     .story-text {
-        font-size: 0.95rem;
+        font-size: var(--font-size-story); /* Changed from 0.95rem */
     }
 }
 
@@ -636,4 +635,14 @@ header.menu-open .header-actions .header-btn:nth-last-child(8) { transition-dela
         border: 1px solid #888;
         color: black;
     }
+}
+
+#zoom-out-btn:disabled,
+#zoom-in-btn:disabled,
+.zoom-out-btn:disabled,
+.zoom-in-btn:disabled {
+    opacity: 0.2;            /* Make it much more faint */
+    filter: grayscale(1);    /* Remove the sepia/gold color entirely */
+    cursor: not-allowed;     /* Show the "no-go" mouse cursor */
+    pointer-events: none;    /* Prevent any accidental ghost clicks */
 }

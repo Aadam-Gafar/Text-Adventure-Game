@@ -4,8 +4,8 @@ const restartBtn = document.getElementById('restart-btn');
 const rewindBtn = document.getElementById('rewind-btn');
 const themeBtn = document.getElementById('theme-btn');
 const dyslexicBtn  = document.getElementById('dyslexic-btn');
-const zoomInBtn    = document.getElementById('zoom-in-btn');
-const zoomOutBtn   = document.getElementById('zoom-out-btn');
+const zoomInBtns  = document.querySelectorAll('.zoom-in-btn');
+const zoomOutBtns = document.querySelectorAll('.zoom-out-btn');
 const menuBtn      = document.getElementById('menu-btn');
 
 // Mobile menu toggle
@@ -56,19 +56,42 @@ const FONT_SIZE_DEFAULT = 1.1;
 function applyFontSize(size) {
     const s = Math.min(FONT_SIZE_MAX, Math.max(FONT_SIZE_MIN, size));
     const root = document.documentElement;
+    
     root.style.setProperty('--font-size-story',  s + 'rem');
     root.style.setProperty('--font-size-choice', (s - 0.1) + 'rem');
     root.style.setProperty('--font-size-player', (s - 0.05) + 'rem');
+    
     localStorage.setItem(SIZE_KEY, s);
-    zoomOutBtn.disabled = s <= FONT_SIZE_MIN;
-    zoomInBtn.disabled  = s >= FONT_SIZE_MAX;
+
+    // Disable/Enable ALL zoom-out buttons found
+    zoomOutBtns.forEach(btn => {
+        btn.disabled = s <= FONT_SIZE_MIN;
+    });
+
+    // Disable/Enable ALL zoom-in buttons found
+    zoomInBtns.forEach(btn => {
+        btn.disabled = s >= FONT_SIZE_MAX;
+    });
+    
     return s;
 }
 
+// Initialize
 let currentFontSize = applyFontSize(parseFloat(localStorage.getItem(SIZE_KEY)) || FONT_SIZE_DEFAULT);
 
-zoomInBtn.addEventListener('click',  () => { currentFontSize = applyFontSize(Math.round((currentFontSize + FONT_SIZE_STEP) * 10) / 10); });
-zoomOutBtn.addEventListener('click', () => { currentFontSize = applyFontSize(Math.round((currentFontSize - FONT_SIZE_STEP) * 10) / 10); });
+// Attach the logic to every "Zoom In" button (Desktop and Mobile)
+zoomInBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        currentFontSize = applyFontSize(Math.round((currentFontSize + FONT_SIZE_STEP) * 10) / 10);
+    });
+});
+
+// Attach the logic to every "Zoom Out" button (Desktop and Mobile)
+zoomOutBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        currentFontSize = applyFontSize(Math.round((currentFontSize - FONT_SIZE_STEP) * 10) / 10);
+    });
+});
 
 // Music (declared early so volume controls can reference them)
 let currentAudio = null;
