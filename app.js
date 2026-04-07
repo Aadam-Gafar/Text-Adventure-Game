@@ -282,7 +282,8 @@ function addPlayerChoice(text) {
  */
 function displayChoices() {
     const choicesDiv = document.createElement('div');
-    choicesDiv.className = 'choices';
+    const isFirstChoices = !storyContainer.querySelector('.player-choice');
+    choicesDiv.className = isFirstChoices ? 'choices first-choices' : 'choices';
     choicesDiv.setAttribute('role', 'group');
     choicesDiv.setAttribute('aria-label', 'Story choices');
 
