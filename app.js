@@ -190,7 +190,23 @@ async function init() {
         story = new inkjs.Story(storyJSON);
 
         // Wire up event listeners
-        restartBtn.addEventListener('click', startNewGame);
+        restartBtn.addEventListener('click', () => {
+            document.getElementById('restart-modal').removeAttribute('hidden');
+            document.getElementById('modal-cancel-btn').focus();
+        });
+        document.getElementById('modal-cancel-btn').addEventListener('click', () => {
+            document.getElementById('restart-modal').setAttribute('hidden', '');
+        });
+        document.getElementById('modal-confirm-btn').addEventListener('click', () => {
+            document.getElementById('restart-modal').setAttribute('hidden', '');
+            startNewGame();
+        });
+        document.getElementById('restart-modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) e.currentTarget.setAttribute('hidden', '');
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') document.getElementById('restart-modal').setAttribute('hidden', '');
+        });
         rewindBtn.addEventListener('click', handleRewind);
 
         // Auto-start appropriate game state

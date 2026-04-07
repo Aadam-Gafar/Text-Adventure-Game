@@ -49,6 +49,18 @@
         </main>
     </div>
 
+    <!-- Restart confirmation modal -->
+    <div id="restart-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+        <div class="modal">
+            <h2 id="modal-title">Restart the game?</h2>
+            <p>All progress will be lost and cannot be undone.</p>
+            <div class="modal-actions">
+                <button id="modal-cancel-btn" class="modal-btn modal-btn-cancel">Cancel</button>
+                <button id="modal-confirm-btn" class="modal-btn modal-btn-confirm">Restart</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Load inkjs locally -->
     <script src="ink.js"></script>
     <!-- Load our app -->
