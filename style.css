@@ -253,11 +253,9 @@ main::-webkit-scrollbar-thumb:hover {
 .choices::before {
     content: '◆';
     position: absolute;
-    top: -0.65em;
+    top: -0.85em;
     left: 50%;
     transform: translateX(-50%);
-    background: var(--parchment);
-    padding: 0 0.6rem;
     font-size: 0.65rem;
     color: var(--sepia-light);
     letter-spacing: 0.1em;
