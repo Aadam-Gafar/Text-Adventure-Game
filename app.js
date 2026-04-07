@@ -139,6 +139,14 @@ function startNewGame() {
     checkpointHistoryLength = 0;
     storyContainer.innerHTML = '';
 
+    // Stop music
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+        currentAudio = null;
+    }
+    currentTrack = null;
+
     // Reset story to beginning
     story.ResetState();
 
@@ -185,6 +193,18 @@ function loadGame() {
         // Update UI
         updateRewindButton();
 
+        // Restore music — defer until first user interaction to satisfy browser autoplay policy
+        if (saveData.currentTrack) {
+            currentTrack = saveData.currentTrack;
+            document.addEventListener('click', () => {
+                if (currentAudio === null && currentTrack) {
+                    const track = currentTrack;
+                    currentTrack = null; // reset so playMusic won't skip it
+                    playMusic(track);
+                }
+            }, { once: true });
+        }
+
         // Show current choices
         continueStory();
     } catch (error) {
@@ -204,6 +224,7 @@ function saveGame() {
             history: storyHistory,
             checkpointInkState: checkpointInkState,
             checkpointHistoryLength: checkpointHistoryLength,
+            currentTrack: currentTrack,
             timestamp: Date.now()
         };
         localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
