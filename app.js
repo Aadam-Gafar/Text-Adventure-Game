@@ -111,6 +111,7 @@ let storyHistory = [];
 // Checkpoint snapshot
 let checkpointInkState = null;
 let checkpointHistoryLength = 0;
+let checkpointTrack = null;
 
 function fadeOut(audio, onDone) {
     if (audio._fadeTimer) { clearInterval(audio._fadeTimer); audio._fadeTimer = null; }
@@ -213,6 +214,7 @@ function startNewGame() {
     storyHistory = [];
     checkpointInkState = null;
     checkpointHistoryLength = 0;
+    checkpointTrack = null;
     storyContainer.innerHTML = '';
 
     // Stop music
@@ -250,6 +252,7 @@ function loadGame() {
         // Restore checkpoint snapshot
         checkpointInkState = saveData.checkpointInkState || null;
         checkpointHistoryLength = saveData.checkpointHistoryLength || 0;
+        checkpointTrack = saveData.checkpointTrack || null;
 
         // Restore history
         storyHistory = saveData.history || [];
@@ -295,6 +298,7 @@ function saveGame() {
             history: storyHistory,
             checkpointInkState: checkpointInkState,
             checkpointHistoryLength: checkpointHistoryLength,
+            checkpointTrack: checkpointTrack,
             currentTrack: currentTrack,
             timestamp: Date.now()
         };
@@ -317,19 +321,18 @@ function continueStory() {
 
     // Read all available story content
     while (story.canContinue) {
-        const wasCheckpointed = story.variablesState['cp_power_restored'];
         const text = story.Continue().trim();
         for (const tag of story.currentTags) {
             const musicMatch = tag.match(/^MUSIC:\s*(\S+)$/);
             if (musicMatch) playMusic(musicMatch[1]);
+            if (tag === 'CHECKPOINT') {
+                checkpointInkState = story.state.ToJson();
+                checkpointHistoryLength = storyHistory.length;
+                checkpointTrack = currentTrack;
+            }
         }
         if (text) {
             addStoryText(text, true);
-        }
-        // Capture snapshot the moment the checkpoint fires
-        if (!wasCheckpointed && story.variablesState['cp_power_restored']) {
-            checkpointInkState = story.state.ToJson();
-            checkpointHistoryLength = storyHistory.length;
         }
     }
 
@@ -423,6 +426,14 @@ function handleRewind() {
     // Restore ink state to checkpoint moment
     story.state.LoadJson(checkpointInkState);
 
+    // Restore music track to checkpoint moment
+    if (checkpointTrack) {
+        currentTrack = null; // force playMusic to not skip it
+        playMusic(checkpointTrack);
+    } else {
+        stopMusic();
+    }
+
     // Trim history and DOM back to checkpoint
     storyHistory = storyHistory.slice(0, checkpointHistoryLength);
     const existingChoices = storyContainer.querySelector('.choices');
@@ -431,8 +442,8 @@ function handleRewind() {
         storyContainer.removeChild(storyContainer.lastChild);
     }
 
-    // Show the choices that were available at the checkpoint
-    displayChoices();
+    // Advance to the next choice point from the restored state
+    continueStory();
 }
 
 /**

@@ -26,8 +26,10 @@ VAR cp_power_restored = false
 ~ power_restored = cp_power_restored
 
 // === CHECKPOINT DISPLAY ===
-=== show_cp_saved ===
+=== set_checkpoint ===
 ═══ CHECKPOINT ═══
+# CHECKPOINT
+~ save_checkpoint()
 ->->
 
 // === KNOTS - Major story sections ===
@@ -49,13 +51,8 @@ You stand before the threshold. The frost clings to your cloak, and your breath 
 
 // === MAIN FACILITY KNOT ===
 === enter_facility ===
-{not power_restored:
-    # MUSIC: ruin_music
-- else:
-    # MUSIC: dwemer_music
-}
-
 {first_visit:
+    # MUSIC: ruin_music
     The doors yielded. They swung inward with a sound like thunder rolling in a deep canyon, heavy and final. The echoes went away into the dark and did not return. You stood on the threshold, and the air that came out of the throat of the mountain was dry and smelled of hot metal and the dust of ages.
 
 Before you lay a great hall. It was a place of reception for a people who had no guests, hewn from the roots of the world with a geometry that was right and terrible. The pillars were squared and massive. They bore the weight of the sky. Beyond the hall, the labyrinth began - a stony maze of impossible construction where the angles did not suit the eyes of men.
@@ -96,6 +93,9 @@ The button sat silent in its housing, a cold eye of metal. Beside it, the keyhol
 + [Leave this chamber] -> enter_facility
 
 = power_restored_sequence
+# MUSIC: dwemer_music
+~ power_restored = true
+
 You took the key and fitted it into the lock. It was a heavy piece of brass, cold and etched with the sharp lines of the Deep Folk, and it slid home with a click that was small but absolute. You turned it.
 
 There was a moment of profound silence, the indrawn breath of the earth. Then, the light came.
@@ -105,10 +105,6 @@ It did not flicker; it bloomed. From the blue lanterns in the workshop to the re
 Along the walls, the pipes began to hum. It was a low, resonant sound that climbed in pitch until the very air seemed to vibrate. The steam hissed with a new, frantic energy, and the oil within the conduits began to flow, thrumming like the blood of a rising giant. 
 
 Then came the sound from below. It was not a hum or a hiss, but a deep, tectonic groan that rose from the foundations of the world. Somewhere in the lightless depths, something massive and ancient had awakened. You felt it in the soles of your boots - the slow, grinding rotation of great wheels and the rhythmic strike of pistons the size of towers. The facility was no longer a tomb. It was a living thing, and it was hungry for the work it had been denied for an age.
-
-~ power_restored = true
-~ save_checkpoint()
--> show_cp_saved ->
 
 + [This may have been a mistake...] -> enter_facility
 
@@ -126,7 +122,10 @@ The air is cold and the silence is absolute, save for the thrumming of the pipes
     
     + {!has_key} [Pick up the key] 
         ~ has_key = true
-        You pick up the key. -> enter_facility
+        You pick up the key. 
+        
+        -> set_checkpoint ->
+        -> enter_facility
     + {!has_key} [Leave the key] -> enter_facility
     + [Leave this chamber] -> enter_facility
     
@@ -137,18 +136,20 @@ In the center of this turning world stood the Centurion.
 
 It was a titan of brass and dwemer-metal, standing thrice the height of a man. Its chest was a broad furnace of gold-hued plate, and its arms were thick as the pillars of a temple. Now that the steam flowed, the construct trembled. A low, tonal vibration rose from its throat - a sound of rushing air and vibrating metal.
 
++ [Activate the Centurion] -> activate_centurion
++ [Leave this chamber] -> enter_facility
+}
+
+= activate_centurion
+
 It did not strike. Instead, it tilted its massive, bearded head of bronze. Plumes of white vapor hissed from the joints of its neck, rhythmic and measured, like the breath of a man in the winter air. Its jaw moved with a heavy, mechanical clicking. It was a voice of brass, trying to find a language it had not spoken since the sun was young. It was trying to speak, and the sound was a lonely, grinding music that filled the hall, a ghost of a word caught in a throat of iron.
     
-    ~ save_checkpoint()
-    -> show_cp_saved ->
+    -> set_checkpoint ->
 
     + [Listen to what he has to say] -> hello_world
-}
 
 = hello_world
 The sound came not from lungs, but from the very core of the machine. It was a voice of grinding plates and escaping steam, a tectonic rattle that shook the dust from the high rafters.
 
 "Hello, world!" he said.
-
-═══ THE END ═══
 -> END
