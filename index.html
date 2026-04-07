@@ -11,7 +11,14 @@
     <div class="container">
         <!-- Header -->
         <header>
-            <button id="menu-btn" aria-label="Open menu">☰</button>
+            <div class="header-actions">
+                <button id="restart-btn" class="header-btn" aria-label="Restart game">
+                    <img src="assets/restart.svg" alt="" width="24" height="24">
+                </button>
+                <button id="rewind-btn" class="header-btn" aria-label="Load last checkpoint" disabled>
+                    <img src="assets/rewind.svg" alt="" width="24" height="24">
+                </button>
+            </div>
             <h1>The Dwemer Facility</h1>
         </header>
 
@@ -19,16 +26,6 @@
         <main id="story-container" role="main">
             <!-- Story text and choices append here dynamically -->
         </main>
-
-        <!-- Menu overlay (hidden by default) -->
-        <div id="menu-overlay" class="hidden" role="dialog" aria-modal="true">
-            <div class="menu-panel">
-                <h2>Menu</h2>
-                <button id="new-game-btn">New Game</button>
-                <button id="continue-btn" disabled>Continue</button>
-                <button id="close-menu-btn">Close</button>
-            </div>
-        </div>
     </div>
 
     <!-- Load inkjs locally -->

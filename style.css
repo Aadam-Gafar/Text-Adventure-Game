@@ -50,28 +50,41 @@ header {
 header h1 {
     font-size: 1.2rem;
     font-weight: 600;
-    margin-left: 1rem;
+    margin-left: 0.75rem;
     flex: 1;
     letter-spacing: 0.5px;
 }
 
-#menu-btn {
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.header-btn {
     background: none;
     border: none;
     color: var(--text-primary);
-    font-size: 1.5rem;
     cursor: pointer;
     padding: 0.5rem;
     border-radius: 4px;
     transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-#menu-btn:hover {
+.header-btn:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.1);
 }
 
-#menu-btn:active {
+.header-btn:active:not(:disabled) {
     background: rgba(255, 255, 255, 0.05);
+}
+
+.header-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
 }
 
 /* Main story area */
@@ -160,93 +173,6 @@ main::-webkit-scrollbar-thumb:hover {
     margin-bottom: 5rem;
 }
 
-/* Menu overlay */
-#menu-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.92);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    backdrop-filter: blur(4px);
-    animation: fadeIn 0.2s ease;
-}
-
-#menu-overlay.hidden {
-    display: none;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-.menu-panel {
-    background: var(--bg-elevated);
-    padding: 2rem;
-    border-radius: 8px;
-    min-width: 300px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-    animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-    from {
-        transform: translateY(20px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-.menu-panel h2 {
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-    font-weight: 600;
-}
-
-.menu-panel button {
-    display: block;
-    width: 100%;
-    padding: 0.875rem 1rem;
-    margin-bottom: 0.75rem;
-    background: var(--button-bg);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
-    font-size: 1rem;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-}
-
-.menu-panel button:hover:not(:disabled) {
-    background: var(--button-hover);
-    border-color: var(--border-hover);
-}
-
-.menu-panel button:active:not(:disabled) {
-    background: var(--button-active);
-}
-
-.menu-panel button:disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
-}
-
-.menu-panel button:last-child {
-    margin-bottom: 0;
-}
-
 /* Loading state (optional - for future use) */
 .loading {
     text-align: center;
@@ -278,10 +204,6 @@ main::-webkit-scrollbar-thumb:hover {
         font-size: 0.95rem;
     }
 
-    .menu-panel {
-        min-width: 280px;
-        padding: 1.5rem;
-    }
 }
 
 /* Very small screens */
@@ -310,10 +232,6 @@ main::-webkit-scrollbar-thumb:hover {
 @media print {
     header {
         position: static;
-    }
-
-    #menu-btn {
-        display: none;
     }
 
     .choices {

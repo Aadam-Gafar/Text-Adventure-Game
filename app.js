@@ -1,10 +1,7 @@
 // DOM elements
 const storyContainer = document.getElementById('story-container');
-const menuOverlay = document.getElementById('menu-overlay');
-const menuBtn = document.getElementById('menu-btn');
-const newGameBtn = document.getElementById('new-game-btn');
-const continueBtn = document.getElementById('continue-btn');
-const closeMenuBtn = document.getElementById('close-menu-btn');
+const restartBtn = document.getElementById('restart-btn');
+const rewindBtn = document.getElementById('rewind-btn');
 
 // Storage key
 const SAVE_KEY = 'dwemer_facility_save';
@@ -31,14 +28,9 @@ async function init() {
         const storyJSON = await response.json();
         story = new inkjs.Story(storyJSON);
 
-        // Check for existing save
-        updateContinueButton();
-
         // Wire up event listeners
-        menuBtn.addEventListener('click', openMenu);
-        newGameBtn.addEventListener('click', handleNewGame);
-        continueBtn.addEventListener('click', handleContinueGame);
-        closeMenuBtn.addEventListener('click', closeMenu);
+        restartBtn.addEventListener('click', startNewGame);
+        rewindBtn.addEventListener('click', handleRewind);
 
         // Auto-start appropriate game state
         if (hasSaveData()) {
@@ -60,32 +52,15 @@ function startNewGame() {
     localStorage.removeItem(SAVE_KEY);
     storyHistory = [];
     storyContainer.innerHTML = '';
-    
+
     // Reset story to beginning
     story.ResetState();
-    
+
     // Update UI
-    updateContinueButton();
-    
+    updateRewindButton();
+
     // Start playing
     continueStory();
-}
-
-/**
- * Handle new game button click
- */
-function handleNewGame() {
-    // If there's existing progress, could add confirmation here
-    startNewGame();
-    closeMenu();
-}
-
-/**
- * Handle continue button click
- */
-function handleContinueGame() {
-    loadGame();
-    closeMenu();
 }
 
 /**
@@ -94,19 +69,19 @@ function handleContinueGame() {
 function loadGame() {
     try {
         const saveData = JSON.parse(localStorage.getItem(SAVE_KEY));
-        
+
         if (!saveData) {
             console.warn('No save data found, starting new game');
             startNewGame();
             return;
         }
-        
+
         // Restore Ink state
         story.state.LoadJson(saveData.inkState);
-        
+
         // Clear container
         storyContainer.innerHTML = '';
-        
+
         // Restore history
         storyHistory = saveData.history || [];
         storyHistory.forEach(item => {
@@ -116,7 +91,10 @@ function loadGame() {
                 addStoryText(item.text, false);
             }
         });
-        
+
+        // Update UI
+        updateRewindButton();
+
         // Show current choices
         continueStory();
     } catch (error) {
@@ -137,7 +115,7 @@ function saveGame() {
             timestamp: Date.now()
         };
         localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
-        updateContinueButton();
+        updateRewindButton();
     } catch (error) {
         console.error('Failed to save game:', error);
     }
@@ -180,7 +158,7 @@ function addStoryText(text, addToHistory = true) {
     p.className = 'story-text';
     p.textContent = text;
     storyContainer.appendChild(p);
-    
+
     if (addToHistory) {
         storyHistory.push({ text, isChoice: false });
     }
@@ -210,9 +188,9 @@ function displayChoices() {
         button.className = 'choice-btn';
         button.textContent = choice.text;
         button.setAttribute('aria-label', `Choice: ${choice.text}`);
-        
+
         button.addEventListener('click', () => handleChoiceClick(choice, index));
-        
+
         choicesDiv.appendChild(button);
     });
 
@@ -226,28 +204,47 @@ function handleChoiceClick(choice, index) {
     // Record the choice visually
     addPlayerChoice(choice.text);
     storyHistory.push({ text: choice.text, isChoice: true });
-    
+
     // Make the choice in the story
     story.ChooseChoiceIndex(index);
-    
+
     // Continue the story
     continueStory();
 }
 
 /**
- * Open menu overlay
+ * Handle rewind button — load the last checkpoint
  */
-function openMenu() {
-    menuOverlay.classList.remove('hidden');
-    closeMenuBtn.focus(); // Accessibility: focus the close button
+function handleRewind() {
+    const checkpointName = story.variablesState['checkpoint_name'];
+    if (!checkpointName) return;
+
+    // Restore checkpoint variables in Ink state
+    story.EvaluateFunction('load_checkpoint', [], false);
+
+    // Map checkpoint name to knot path
+    const knotMap = {
+        'Entrance Hall':         'enter_facility',
+        'Laboratory Discovered': 'laboratory',
+        'Power Restored':        'enter_facility',
+        'Library Accessed':      'library',
+        'Depths Entered':        'depths',
+    };
+    const knot = knotMap[checkpointName] || 'enter_facility';
+
+    // Clear display and history, then divert to checkpoint location
+    storyContainer.innerHTML = '';
+    storyHistory = [];
+    story.ChoosePathString(knot);
+    continueStory();
 }
 
 /**
- * Close menu overlay
+ * Update rewind button state based on whether a checkpoint exists
  */
-function closeMenu() {
-    menuOverlay.classList.add('hidden');
-    menuBtn.focus(); // Return focus to menu button
+function updateRewindButton() {
+    const hasCheckpoint = story.variablesState['checkpoint_name'] !== '';
+    rewindBtn.disabled = !hasCheckpoint;
 }
 
 /**
@@ -255,14 +252,6 @@ function closeMenu() {
  */
 function hasSaveData() {
     return localStorage.getItem(SAVE_KEY) !== null;
-}
-
-/**
- * Update continue button state
- */
-function updateContinueButton() {
-    const hasSave = hasSaveData();
-    continueBtn.disabled = !hasSave;
 }
 
 /**
@@ -280,15 +269,6 @@ function showError(message) {
  * Keyboard shortcuts
  */
 document.addEventListener('keydown', (e) => {
-    // Escape to toggle menu
-    if (e.key === 'Escape') {
-        if (menuOverlay.classList.contains('hidden')) {
-            openMenu();
-        } else {
-            closeMenu();
-        }
-    }
-    
     // Number keys for choices (1-9)
     if (e.key >= '1' && e.key <= '9') {
         const choiceIndex = parseInt(e.key) - 1;
