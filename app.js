@@ -2,9 +2,27 @@
 const storyContainer = document.getElementById('story-container');
 const restartBtn = document.getElementById('restart-btn');
 const rewindBtn = document.getElementById('rewind-btn');
+const themeBtn = document.getElementById('theme-btn');
 
 // Storage key
 const SAVE_KEY = 'dwemer_facility_save';
+const THEME_KEY = 'dwemer_theme';
+
+// Theme
+function applyTheme(dark) {
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : '');
+    localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
+}
+
+(function initTheme() {
+    const saved = localStorage.getItem(THEME_KEY);
+    applyTheme(saved === 'dark');
+})();
+
+themeBtn.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    applyTheme(!isDark);
+});
 
 // State
 let story;
@@ -250,11 +268,17 @@ function handleChoiceClick(choice, index) {
     addPlayerChoice(choice.text);
     storyHistory.push({ text: choice.text, isChoice: true });
 
+    // Mark where new content will begin (the player choice just added)
+    const scrollAnchor = storyContainer.lastElementChild;
+
     // Make the choice in the story
     story.ChooseChoiceIndex(index);
 
     // Continue the story
     continueStory();
+
+    // Scroll so the player choice sits at the top of the viewport
+    scrollAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /**

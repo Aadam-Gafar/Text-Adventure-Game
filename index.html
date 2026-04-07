@@ -5,12 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="An interactive Dwemer facility exploration in Skyrim">
     <title>The Dwemer Facility</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IM+Fell+Double+Pica:ital@0;1&family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <!-- Header -->
         <header>
+            <h1>The Dwemer Facility</h1>
             <div class="header-actions">
                 <button id="restart-btn" class="header-btn" aria-label="Restart game">
                     <img src="assets/restart.svg" alt="" width="24" height="24">
@@ -18,8 +22,10 @@
                 <button id="rewind-btn" class="header-btn" aria-label="Load last checkpoint" disabled>
                     <img src="assets/rewind.svg" alt="" width="24" height="24">
                 </button>
+                <button id="theme-btn" class="header-btn" aria-label="Toggle dark mode">
+                    <img src="assets/theme.svg" alt="" width="24" height="24">
+                </button>
             </div>
-            <h1>The Dwemer Facility</h1>
         </header>
 
         <!-- Main story area -->

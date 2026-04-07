@@ -12,7 +12,7 @@ VAR cp_power_restored = false
 // STORY START
 // ===================================
 
--> introduction
+* [Start] -> introduction // Gets player to interact so webpage can load files to play music
 
 // FUNCTIONS
 === function save_checkpoint() ===
@@ -31,7 +31,6 @@ VAR cp_power_restored = false
 ->->
 
 // === KNOTS - Major story sections ===
-
 === introduction ===
 # MUSIC: skyrim_music
 In the bitter cold of skyrim, you find a ruined Dwemer facility.
@@ -104,5 +103,5 @@ You put the key into the button's keyhole and turn it. Light blooms throughout t
 = hello_world
 "Hello, world!" he says.
 
-<b>═══ THE END ═══</b>
+═══ THE END ═══
 -> END
