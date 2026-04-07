@@ -76,22 +76,60 @@ let checkpointHistoryLength = 0;
 let currentAudio = null;
 let currentTrack = null;
 
+const MUSIC_VOLUME   = 0.5;
+const FADE_DURATION  = 1500; // ms
+const FADE_INTERVAL  = 50;   // ms between steps
+
+function fadeOut(audio, onDone) {
+    const step = (MUSIC_VOLUME / (FADE_DURATION / FADE_INTERVAL));
+    const timer = setInterval(() => {
+        if (audio.volume <= step) {
+            audio.volume = 0;
+            audio.pause();
+            audio.currentTime = 0;
+            clearInterval(timer);
+            if (onDone) onDone();
+        } else {
+            audio.volume -= step;
+        }
+    }, FADE_INTERVAL);
+}
+
+function fadeIn(audio) {
+    audio.volume = 0;
+    audio.play().catch(err => console.error('[playMusic] failed:', err));
+    const step = (MUSIC_VOLUME / (FADE_DURATION / FADE_INTERVAL));
+    const timer = setInterval(() => {
+        if (audio.volume + step >= MUSIC_VOLUME) {
+            audio.volume = MUSIC_VOLUME;
+            clearInterval(timer);
+        } else {
+            audio.volume += step;
+        }
+    }, FADE_INTERVAL);
+}
+
 function playMusic(trackName) {
-    console.log('[playMusic] requested:', trackName, '| current:', currentTrack);
     if (currentTrack === trackName) return;
-    if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-    }
     currentTrack = trackName;
-    currentAudio = new Audio(`assets/${trackName}.mp3`);
-    currentAudio.loop = true;
-    currentAudio.volume = 0.5;
-    currentAudio.play().then(() => {
-        console.log('[playMusic] playing:', trackName);
-    }).catch(err => {
-        console.error('[playMusic] failed:', trackName, err);
-    });
+    const newAudio = new Audio(`assets/${trackName}.mp3`);
+    newAudio.loop = true;
+    if (currentAudio) {
+        const outgoing = currentAudio;
+        currentAudio = newAudio;
+        fadeOut(outgoing, () => fadeIn(newAudio));
+    } else {
+        currentAudio = newAudio;
+        fadeIn(newAudio);
+    }
+}
+
+function stopMusic() {
+    if (currentAudio) {
+        fadeOut(currentAudio);
+        currentAudio = null;
+    }
+    currentTrack = null;
 }
 
 /**
@@ -140,12 +178,7 @@ function startNewGame() {
     storyContainer.innerHTML = '';
 
     // Stop music
-    if (currentAudio) {
-        currentAudio.pause();
-        currentAudio.currentTime = 0;
-        currentAudio = null;
-    }
-    currentTrack = null;
+    stopMusic();
 
     // Reset story to beginning
     story.ResetState();
