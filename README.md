@@ -39,7 +39,7 @@ The engine responds to the following tags in `story.ink`:
 
 ## Running it
 
-Serve the project root over HTTP (e.g. `python -m http.server 8000`) and open `index.html`. Direct file access won't work due to browser fetch restrictions.
+Serve the project root over HTTP (e.g. `python -m http.server 8000`) and open `http://localhost:8000/` in your browser (not `index.html` as that will cause the browser to try and dig into your hard drive, causing CORS errors).
 
 ## Extending it
 
