@@ -64,6 +64,46 @@ let currentFontSize = applyFontSize(parseFloat(localStorage.getItem(SIZE_KEY)) |
 zoomInBtn.addEventListener('click',  () => { currentFontSize = applyFontSize(Math.round((currentFontSize + FONT_SIZE_STEP) * 10) / 10); });
 zoomOutBtn.addEventListener('click', () => { currentFontSize = applyFontSize(Math.round((currentFontSize - FONT_SIZE_STEP) * 10) / 10); });
 
+// Music (declared early so volume controls can reference them)
+let currentAudio = null;
+let currentTrack = null;
+
+const MUSIC_VOLUME  = 0.5;
+const FADE_DURATION = 1500; // ms
+const FADE_INTERVAL = 50;   // ms between steps
+
+// Volume
+const VOLUME_KEY = 'dwemer_volume';
+const volumeBtn  = document.getElementById('volume-btn');
+const volumeIcon = document.getElementById('volume-icon');
+
+const VOLUME_LEVELS = [
+    { label: 'High',   value: 1.00, icon: 'sound-high' },
+    { label: 'Low',    value: 0.66, icon: 'sound-low'  },
+    { label: 'Min',    value: 0.33, icon: 'sound-min'  },
+    { label: 'Off',    value: 0.00, icon: 'sound-off'  },
+];
+
+let volumeIndex = 0;
+
+function applyVolume(index) {
+    volumeIndex = index;
+    const level = VOLUME_LEVELS[index];
+    localStorage.setItem(VOLUME_KEY, index);
+    volumeIcon.src = `assets/${level.icon}.svg`;
+    volumeBtn.setAttribute('aria-label', `Volume: ${level.label}`);
+    if (currentAudio) currentAudio.volume = level.value * MUSIC_VOLUME;
+}
+
+(function initVolume() {
+    const saved = parseInt(localStorage.getItem(VOLUME_KEY), 10);
+    applyVolume((saved >= 0 && saved < VOLUME_LEVELS.length) ? saved : 0);
+})();
+
+volumeBtn.addEventListener('click', () => {
+    applyVolume((volumeIndex + 1) % VOLUME_LEVELS.length);
+});
+
 // State
 let story;
 let storyHistory = [];
@@ -72,22 +112,16 @@ let storyHistory = [];
 let checkpointInkState = null;
 let checkpointHistoryLength = 0;
 
-// Music
-let currentAudio = null;
-let currentTrack = null;
-
-const MUSIC_VOLUME   = 0.5;
-const FADE_DURATION  = 1500; // ms
-const FADE_INTERVAL  = 50;   // ms between steps
-
 function fadeOut(audio, onDone) {
+    if (audio._fadeTimer) { clearInterval(audio._fadeTimer); audio._fadeTimer = null; }
     const step = (MUSIC_VOLUME / (FADE_DURATION / FADE_INTERVAL));
-    const timer = setInterval(() => {
+    audio._fadeTimer = setInterval(() => {
         if (audio.volume <= step) {
             audio.volume = 0;
             audio.pause();
             audio.currentTime = 0;
-            clearInterval(timer);
+            clearInterval(audio._fadeTimer);
+            audio._fadeTimer = null;
             if (onDone) onDone();
         } else {
             audio.volume -= step;
@@ -96,13 +130,17 @@ function fadeOut(audio, onDone) {
 }
 
 function fadeIn(audio) {
+    if (audio._fadeTimer) { clearInterval(audio._fadeTimer); audio._fadeTimer = null; }
+    const target = MUSIC_VOLUME * VOLUME_LEVELS[volumeIndex].value;
     audio.volume = 0;
     audio.play().catch(err => console.error('[playMusic] failed:', err));
+    if (target === 0) return;
     const step = (MUSIC_VOLUME / (FADE_DURATION / FADE_INTERVAL));
-    const timer = setInterval(() => {
-        if (audio.volume + step >= MUSIC_VOLUME) {
-            audio.volume = MUSIC_VOLUME;
-            clearInterval(timer);
+    audio._fadeTimer = setInterval(() => {
+        if (audio.volume + step >= target) {
+            audio.volume = target;
+            clearInterval(audio._fadeTimer);
+            audio._fadeTimer = null;
         } else {
             audio.volume += step;
         }
@@ -111,17 +149,17 @@ function fadeIn(audio) {
 
 function playMusic(trackName) {
     if (currentTrack === trackName) return;
+    // Stop the outgoing track immediately (cancels any in-progress fade)
+    if (currentAudio) {
+        const outgoing = currentAudio;
+        currentAudio = null;
+        fadeOut(outgoing);
+    }
     currentTrack = trackName;
     const newAudio = new Audio(`assets/${trackName}.mp3`);
     newAudio.loop = true;
-    if (currentAudio) {
-        const outgoing = currentAudio;
-        currentAudio = newAudio;
-        fadeOut(outgoing, () => fadeIn(newAudio));
-    } else {
-        currentAudio = newAudio;
-        fadeIn(newAudio);
-    }
+    currentAudio = newAudio;
+    fadeIn(newAudio);
 }
 
 function stopMusic() {
