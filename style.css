@@ -112,6 +112,14 @@ header h1 {
     color: var(--ink);
     text-transform: uppercase;
 }
+
+.header-quick-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+}
+
 .header-actions {
     display: flex;
     align-items: center;
@@ -373,68 +381,87 @@ main::-webkit-scrollbar-thumb:hover {
     }
 
     /* 1. Keep the container pushed to the right at all times */
-.header-actions {
-    margin-left: auto;
-    display: flex;
-    align-items: center;
-    /* Ensure the container grows from right-to-left */
-    justify-content: flex-end; 
-}
+    .header-actions {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        /* Ensure the container grows from right-to-left */
+        justify-content: flex-end; 
+    }
 
-/* Icon buttons: collapsed to zero width, invisible */
-.header-btn:not(.mobile-menu-btn) {
-    max-width: 0;
-    padding-left: 0;
-    padding-right: 0;
-    opacity: 0;
-    overflow: hidden;
-    pointer-events: none;
-    transition: max-width 0.25s ease, padding-left 0.25s ease,
-                padding-right 0.25s ease, opacity 0.2s ease,
-                background 0.2s, color 0.2s;
-}
+    /* Quick actions (restart, rewind) — always visible, fade in/out with favicon */
+    .header-quick-actions {
+        transition: opacity 0.25s ease;
+    }
 
-/* Closing stagger: ripple right into menu btn */
-.header-actions .header-btn:nth-child(1) { transition-delay: 0ms; }
-.header-actions .header-btn:nth-child(2) { transition-delay: 25ms; }
-.header-actions .header-btn:nth-child(3) { transition-delay: 50ms; }
-.header-actions .header-btn:nth-child(4) { transition-delay: 75ms; }
-.header-actions .header-btn:nth-child(5) { transition-delay: 100ms; }
-.header-actions .header-btn:nth-child(6) { transition-delay: 125ms; }
-.header-actions .header-btn:nth-child(7) { transition-delay: 150ms; }
+    .header-quick-actions .header-btn {
+        max-width: none;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        opacity: 1;
+        pointer-events: auto;
+        transition: opacity 0.25s ease, background 0.2s, color 0.2s;
+    }
 
-.mobile-menu-btn {
-    display: flex;
-    order: 99; /* Always keep the menu button at the end (the right) */
-}
+    header.menu-open .header-quick-actions {
+        opacity: 0;
+        pointer-events: none;
+    }
 
-/* Open state */
-header.menu-open .header-favicon {
-    opacity: 0;
-    pointer-events: none;
-}
+    /* Icon buttons in header-actions: collapsed to zero width, invisible */
+    .header-actions .header-btn:not(.mobile-menu-btn) {
+        max-width: 0;
+        padding-left: 0;
+        padding-right: 0;
+        opacity: 0;
+        overflow: hidden;
+        pointer-events: none;
+        transition: max-width 0.25s ease, padding-left 0.25s ease,
+                    padding-right 0.25s ease, opacity 0.2s ease,
+                    background 0.2s, color 0.2s;
+    }
 
-header.menu-open .header-actions::-webkit-scrollbar {
-    display: none;
-}
+    /* Closing stagger: ripple right into menu btn */
+    .header-actions .header-btn:nth-child(1) { transition-delay: 0ms; }
+    .header-actions .header-btn:nth-child(2) { transition-delay: 25ms; }
+    .header-actions .header-btn:nth-child(3) { transition-delay: 50ms; }
+    .header-actions .header-btn:nth-child(4) { transition-delay: 75ms; }
+    .header-actions .header-btn:nth-child(5) { transition-delay: 100ms; }
+    .header-actions .header-btn:nth-child(6) { transition-delay: 125ms; }
+    .header-actions .header-btn:nth-child(7) { transition-delay: 150ms; }
 
-header.menu-open .header-btn:not(.mobile-menu-btn) {
-    max-width: 44px;
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-    opacity: 1;
-    pointer-events: auto;
-    flex-shrink: 0;
-}
+    .mobile-menu-btn {
+        display: flex;
+        order: 99; /* Always keep the menu button at the end (the right) */
+    }
 
-/* Opening stagger: rightmost icons (closest to menu btn) appear first */
-header.menu-open .header-actions .header-btn:nth-last-child(2) { transition-delay: 0ms; }
-header.menu-open .header-actions .header-btn:nth-last-child(3) { transition-delay: 25ms; }
-header.menu-open .header-actions .header-btn:nth-last-child(4) { transition-delay: 50ms; }
-header.menu-open .header-actions .header-btn:nth-last-child(5) { transition-delay: 75ms; }
-header.menu-open .header-actions .header-btn:nth-last-child(6) { transition-delay: 100ms; }
-header.menu-open .header-actions .header-btn:nth-last-child(7) { transition-delay: 125ms; }
-header.menu-open .header-actions .header-btn:nth-last-child(8) { transition-delay: 150ms; }
+    /* Open state */
+    header.menu-open .header-favicon {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    header.menu-open .header-actions::-webkit-scrollbar {
+        display: none;
+    }
+
+    header.menu-open .header-btn:not(.mobile-menu-btn) {
+        max-width: 44px;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        opacity: 1;
+        pointer-events: auto;
+        flex-shrink: 0;
+    }
+
+    /* Opening stagger: rightmost icons (closest to menu btn) appear first */
+    header.menu-open .header-actions .header-btn:nth-last-child(2) { transition-delay: 0ms; }
+    header.menu-open .header-actions .header-btn:nth-last-child(3) { transition-delay: 25ms; }
+    header.menu-open .header-actions .header-btn:nth-last-child(4) { transition-delay: 50ms; }
+    header.menu-open .header-actions .header-btn:nth-last-child(5) { transition-delay: 75ms; }
+    header.menu-open .header-actions .header-btn:nth-last-child(6) { transition-delay: 100ms; }
+    header.menu-open .header-actions .header-btn:nth-last-child(7) { transition-delay: 125ms; }
+    header.menu-open .header-actions .header-btn:nth-last-child(8) { transition-delay: 150ms; }
     main {
         padding: 1.75rem 1.25rem;
     }
