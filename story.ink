@@ -83,7 +83,7 @@ In the center of this mechanical grove sat a pedestal, and upon it, a button. Be
     ~ inv_tube = true
     You take the coiled copper tube.
     -> opts
-+ {not inv_Resonating_Aetheric_Harmonization_Calibration_Spanner_of_the_Seventh_High_Artisan} [Pick up the Resonating Aetheric Harmonization Calibration Spanner of the Seventh High-Artisan]
++ {not inv_Resonating_Aetheric_Harmonization_Calibration_Spanner_of_the_Seventh_High_Artisan} [Pick up the Resonating Aetheric Harmonization Calibration Spanner of the Seventh High Artisan]
     ~ inv_Resonating_Aetheric_Harmonization_Calibration_Spanner_of_the_Seventh_High_Artisan = true
     It is an absurdly long name for a tool that looks like a very shiny wrench. You take it.
     -> opts

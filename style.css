@@ -92,16 +92,6 @@ header {
     overflow: visible;
 }
 
-header::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(to right, transparent, var(--sepia-light), transparent);
-    opacity: 0.4;
-}
 
 .header-favicon {
     flex-shrink: 0;
