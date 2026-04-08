@@ -381,7 +381,10 @@ main::-webkit-scrollbar-thumb:hover {
 [data-font="dyslexic"] body,
 [data-font="dyslexic"] .story-text,
 [data-font="dyslexic"] .player-choice,
-[data-font="dyslexic"] .choice-btn {
+[data-font="dyslexic"] .choice-btn,
+[data-font="dyslexic"] #inventory-toggle,
+[data-font="dyslexic"] #inventory-list li,
+[data-font="dyslexic"] .inventory-empty {
     font-family: 'OpenDyslexic', sans-serif;
 }
 
@@ -732,7 +735,7 @@ main::-webkit-scrollbar-thumb:hover {
     gap: 0.45rem;
     padding: 0.6rem 1.75rem;
     font-family: 'IM Fell English SC', Georgia, serif;
-    font-size: 0.68rem;
+    font-size: calc(var(--font-size-story) * 0.618);
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--sepia);
@@ -786,7 +789,7 @@ main::-webkit-scrollbar-thumb:hover {
 }
 
 #inventory-list li {
-    font-size: 0.88rem;
+    font-size: calc(var(--font-size-story) * 0.8);
     color: var(--ink-faded);
     font-style: italic;
     display: flex;
@@ -796,13 +799,13 @@ main::-webkit-scrollbar-thumb:hover {
 
 #inventory-list li::before {
     content: '◆';
-    font-size: 0.5rem;
+    font-size: calc(var(--font-size-story) * 0.455);
     color: var(--sepia-light);
     flex-shrink: 0;
 }
 
 .inventory-empty {
-    font-size: 0.85rem;
+    font-size: calc(var(--font-size-story) * 0.773);
     color: var(--sepia);
     font-style: italic;
 }
