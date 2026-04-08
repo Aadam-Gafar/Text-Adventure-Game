@@ -5,6 +5,7 @@ VAR power_restored = false
 VAR inv_key = false
 VAR inv_vessel = false
 VAR inv_tube = false
+VAR inv_Resonating_Aetheric_Harmonization_Calibration_Spanner_of_the_Seventh_High_Artisan = false
 
 // ===================================
 // STORY START
@@ -88,6 +89,10 @@ In the center of this mechanical grove sat a pedestal, and upon it, a button. Be
     ~ inv_tube = true
     You take the coiled copper tube.
     -> opts
++ {not inv_Resonating_Aetheric_Harmonization_Calibration_Spanner_of_the_Seventh_High_Artisan} [Pick up the Resonating Aetheric Harmonization Calibration Spanner of the Seventh High-Artisan]
+    ~ inv_Resonating_Aetheric_Harmonization_Calibration_Spanner_of_the_Seventh_High_Artisan = true
+    It is an absurdly long name for a tool that looks like a very shiny wrench. You take it.
+    -> opts
 
 // --- PUT DOWN OPTIONS ---
 + {inv_key && not power_restored} [Put down the key]
@@ -101,6 +106,10 @@ In the center of this mechanical grove sat a pedestal, and upon it, a button. Be
 + {inv_tube} [Put down tube]
     ~ inv_tube = false
     You set the tube back down.
+    -> opts
++ {inv_Resonating_Aetheric_Harmonization_Calibration_Spanner_of_the_Seventh_High_Artisan} [Put down the Resonating Aetheric-Harmonization Calibration Spanner of the Seventh High-Artisan]
+    ~ inv_Resonating_Aetheric_Harmonization_Calibration_Spanner_of_the_Seventh_High_Artisan = false
+    You set the massive tool back on the workbench. The table groans slightly under its weight.
     -> opts
 
 // --- ACTION & LEAVE ---
