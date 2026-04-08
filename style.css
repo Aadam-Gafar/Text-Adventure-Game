@@ -236,10 +236,11 @@ main::-webkit-scrollbar-thumb:hover {
 /* ── Inventory change lines ──────────────────────── */
 
 .item-change {
-    font-size: 0.9rem;
+    font-size: var(--font-size-player);
     font-style: italic;
     margin-bottom: 0.75rem;
-    animation: manuscript-reveal 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+    transition: none;
+    animation: manuscript-reveal 1.1s cubic-bezier(0.25, 0.1, 0.25, 1) both;
 }
 
 .item-change.gain { color: var(--gain); }
