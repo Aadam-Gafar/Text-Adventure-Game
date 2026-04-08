@@ -9,6 +9,8 @@ const zoomOutBtns = document.querySelectorAll('.zoom-out-btn');
 const menuBtn          = document.getElementById('menu-btn');
 const inventoryBar     = document.getElementById('inventory-bar');
 const inventoryToggle  = document.getElementById('inventory-toggle');
+const ttsBtn           = document.getElementById('tts-btn');
+const ttsIcon          = document.getElementById('tts-icon');
 
 // Mobile menu toggle
 menuBtn.addEventListener('click', () => {
@@ -331,6 +333,116 @@ function updateInventory() {
     }
 }
 
+// =============================================================
+// TTS (Text-to-Speech)
+// =============================================================
+
+let ttsState = 'off'; // 'off' | 'selecting' | 'playing'
+let ttsObserver = null;
+
+// Hide the button entirely if the browser doesn't support TTS
+if (!('speechSynthesis' in window)) {
+    ttsBtn.style.display = 'none';
+}
+
+function setTTSState(newState) {
+    ttsState = newState;
+    if (newState === 'off') {
+        ttsIcon.src = 'assets/icons/microphone-mute.svg';
+        ttsBtn.setAttribute('aria-label', 'Toggle text to speech');
+        exitTTSMode();
+        speechSynthesis.cancel();
+    } else if (newState === 'selecting') {
+        ttsIcon.src = 'assets/icons/microphone.svg';
+        ttsBtn.setAttribute('aria-label', 'Cancel text to speech');
+        enterTTSMode();
+    } else if (newState === 'playing') {
+        ttsIcon.src = 'assets/icons/microphone.svg';
+        ttsBtn.setAttribute('aria-label', 'Pause text to speech');
+    }
+}
+
+ttsBtn.addEventListener('click', () => {
+    if (ttsState === 'off') {
+        setTTSState('selecting');
+    } else {
+        setTTSState('off');
+    }
+});
+
+function addTTSMicBtn(paragraph) {
+    const btn = document.createElement('button');
+    btn.className = 'tts-mic-btn';
+    btn.setAttribute('aria-label', 'Read from here');
+    const img = document.createElement('img');
+    img.src = 'assets/icons/microphone.svg';
+    img.alt = '';
+    img.width = 14;
+    img.height = 14;
+    btn.appendChild(img);
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        exitTTSMode();
+        ttsState = 'playing';
+        ttsIcon.src = 'assets/icons/microphone.svg';
+        ttsBtn.setAttribute('aria-label', 'Pause text to speech');
+        startTTSFrom(paragraph);
+    });
+    paragraph.insertBefore(btn, paragraph.firstChild);
+}
+
+function enterTTSMode() {
+    storyContainer.classList.add('tts-mode');
+
+    ttsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const btn = entry.target.querySelector('.tts-mic-btn');
+                if (btn) btn.classList.add('tts-visible');
+            }
+        });
+    }, { root: storyContainer, threshold: 0.1 });
+
+    storyContainer.querySelectorAll('.player-choice').forEach(p => {
+        addTTSMicBtn(p);
+        ttsObserver.observe(p);
+    });
+}
+
+function exitTTSMode() {
+    storyContainer.classList.remove('tts-mode');
+    if (ttsObserver) {
+        ttsObserver.disconnect();
+        ttsObserver = null;
+    }
+    storyContainer.querySelectorAll('.tts-mic-btn').forEach(btn => btn.remove());
+}
+
+function startTTSFrom(fromParagraph) {
+    speechSynthesis.cancel();
+
+    const allReadable = Array.from(
+        storyContainer.querySelectorAll('.story-text, .player-choice')
+    );
+    const startIdx = allReadable.indexOf(fromParagraph);
+    if (startIdx === -1) { setTTSState('off'); return; }
+
+    const texts = allReadable
+        .slice(startIdx)
+        .map(el => el.textContent.trim())
+        .filter(t => t.length > 0);
+
+    if (texts.length === 0) { setTTSState('off'); return; }
+
+    texts.forEach((text, i) => {
+        const utterance = new SpeechSynthesisUtterance(text);
+        if (i === texts.length - 1) {
+            utterance.onend = () => setTTSState('off');
+        }
+        speechSynthesis.speak(utterance);
+    });
+}
+
 /**
  * Initialize the application
  */
@@ -419,6 +531,9 @@ async function init() {
  * Start a new game
  */
 function startNewGame() {
+    // Stop TTS if active
+    if (ttsState !== 'off') setTTSState('off');
+
     // Clear save and history
     localStorage.removeItem(SAVE_KEY);
     storyHistory = [];
@@ -624,7 +739,13 @@ function addPlayerChoice(text) {
     const p = document.createElement('p');
     p.className = 'player-choice';
     p.textContent = text;
+    if (ttsState === 'selecting') {
+        addTTSMicBtn(p);
+    }
     storyContainer.appendChild(p);
+    if (ttsState === 'selecting' && ttsObserver) {
+        ttsObserver.observe(p);
+    }
 }
 
 /**
@@ -687,6 +808,9 @@ function handleChoiceClick(choice, index) {
  */
 function handleRewind() {
     if (!checkpointInkState) return;
+
+    // Stop TTS if active
+    if (ttsState !== 'off') setTTSState('off');
 
     // Restore ink state to checkpoint moment
     story.state.LoadJson(checkpointInkState);
