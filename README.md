@@ -17,7 +17,7 @@ A browser-based interactive fiction framework built on [Ink](https://www.inklest
 - Keyboard shortcuts: press 1–9 to select choices
 
 ### Inventory
-- Inventory panel driven entirely by Ink variables — any variable prefixed `inv_` is tracked automatically
+- Inventory panel driven entirely by Ink variables- any variable prefixed `inv_` is tracked automatically
 - Gain/loss notifications appear inline as items are picked up or dropped
 - Inventory-gated choices are visually marked so players know an item is required
 - Items displayed alphabetically in a collapsible sidebar panel
@@ -25,13 +25,19 @@ A browser-based interactive fiction framework built on [Ink](https://www.inklest
 ### Music
 - Background music tied to story beats via `# MUSIC: trackname` tags
 - Smooth fade in/out on track transitions - no overlapping playback
-- Volume control cycling through four levels (100%, 66%, 33%, muted), persisted across sessions
 - Music pauses when the tab loses focus and resumes on return
+- Music automatically ducks to a low volume while TTS is speaking, then restores
+
+### Text-to-Speech
+- TTS toggle in the header- activates selection mode, showing a mic button on every past player choice
+- Click any mic button to begin reading aloud from that point through the rest of the story
+- Music ducks while speech plays and returns to normal volume when done
+- TTS is cancelled automatically on restart or rewind
 
 ### UI
 - Light/dark theme toggle, persisted across sessions
 - OpenDyslexic font toggle, persisted across sessions
-- Adjustable font size (zoom in/out), persisted across sessions
+- Adjustable font size (zoom in/out), persisted across sessions- affects story text, choices, and inventory
 - Scroll-to-bottom floating button with enter/exit animations
 - Restart and rewind confirmation modals to prevent accidental progress loss
 - Responsive mobile layout with collapsible header menu
