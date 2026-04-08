@@ -219,6 +219,7 @@ function stopMusic() {
 
 // Inventory
 let invVarNames = [];
+let invGatedChoiceTexts = new Set();
 
 inventoryToggle.addEventListener('click', () => {
     const open = inventoryBar.getAttribute('aria-expanded') === 'true';
@@ -226,6 +227,46 @@ inventoryToggle.addEventListener('click', () => {
     inventoryBar.setAttribute('aria-expanded', next);
     inventoryToggle.setAttribute('aria-expanded', next);
 });
+
+function buildInvGatedChoiceTexts(storyJSON) {
+    const texts = new Set();
+    function scanArray(arr) {
+        for (let i = 0; i < arr.length; i++) {
+            const item = arr[i];
+            if (item && typeof item === 'object' && '*' in item) {
+                // Found a choice marker — scan backward through condition tokens
+                let j = i - 1;
+                if (arr[j] === '/ev') j--;          // skip /ev
+                let hasInv = false;
+                let choiceText = null;
+                while (j >= 0 && arr[j] !== '/str') {
+                    const t = arr[j];
+                    if (t && typeof t === 'object' && 'VAR?' in t && t['VAR?'].startsWith('inv_')) {
+                        hasInv = true;
+                    }
+                    j--;
+                }
+                // arr[j] is now '/str'; text is at j-1, 'str' at j-2
+                if (hasInv && j >= 1) {
+                    const raw = arr[j - 1];
+                    if (typeof raw === 'string' && raw.startsWith('^')) {
+                        choiceText = raw.slice(1);
+                    }
+                }
+                if (choiceText) texts.add(choiceText);
+            }
+            if (Array.isArray(item)) {
+                scanArray(item);
+            } else if (item && typeof item === 'object') {
+                for (const val of Object.values(item)) {
+                    if (Array.isArray(val)) scanArray(val);
+                }
+            }
+        }
+    }
+    scanArray(storyJSON.root);
+    return texts;
+}
 
 function getInvVariableNames(storyJSON) {
     const names = [];
@@ -287,6 +328,7 @@ async function init() {
         }
         const storyJSON = await response.json();
         invVarNames = getInvVariableNames(storyJSON);
+        invGatedChoiceTexts = buildInvGatedChoiceTexts(storyJSON);
         story = new inkjs.Story(storyJSON);
 
         // Wire up event listeners
@@ -533,7 +575,8 @@ function displayChoices() {
 
     story.currentChoices.forEach((choice, index) => {
         const button = document.createElement('button');
-        button.className = 'choice-btn';
+        const isInvGated = invGatedChoiceTexts.has(choice.text);
+        button.className = isInvGated ? 'choice-btn inv-gated' : 'choice-btn';
         button.textContent = choice.text;
         button.setAttribute('aria-label', `Choice: ${choice.text}`);
 

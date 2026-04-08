@@ -336,6 +336,36 @@ main::-webkit-scrollbar-thumb:hover {
     margin-bottom: 5rem;
 }
 
+.choice-btn.inv-gated {
+    border-color: var(--sepia);
+    background: rgba(140, 100, 40, 0.05);
+    padding-right: 3rem;
+}
+
+.choice-btn.inv-gated::before {
+    color: var(--sepia);
+}
+
+.choice-btn.inv-gated::after {
+    content: '';
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.5rem;
+    height: 1.5rem;
+    background: url('assets/icons/suitcase.svg') center / contain no-repeat;
+}
+
+.choice-btn.inv-gated:hover {
+    background: rgba(140, 100, 40, 0.1);
+    border-color: var(--sepia);
+}
+
+.choice-btn.inv-gated:hover::before {
+    color: var(--crimson);
+}
+
 /* ── OpenDyslexic mode ───────────────────────────── */
 
 [data-font="dyslexic"] body,
