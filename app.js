@@ -296,7 +296,8 @@ function updateInventory() {
     if (!story || invVarNames.length === 0) return;
     const list = document.getElementById('inventory-list');
     list.innerHTML = '';
-    const held = invVarNames.filter(name => story.variablesState[name] === true);
+    const held = invVarNames.filter(name => story.variablesState[name] === true)
+                            .sort((a, b) => formatInvName(a).localeCompare(formatInvName(b)));
     if (held.length === 0) {
         const li = document.createElement('li');
         li.className = 'inventory-empty';
