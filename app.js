@@ -119,7 +119,7 @@ function applyVolume(index) {
     volumeIndex = index;
     const level = VOLUME_LEVELS[index];
     localStorage.setItem(VOLUME_KEY, index);
-    volumeIcon.src = `assets/${level.icon}.svg`;
+    volumeIcon.src = `assets/icons/${level.icon}.svg`;
     volumeBtn.setAttribute('aria-label', `Volume: ${level.label}`);
     if (currentAudio) currentAudio.volume = level.value * MUSIC_VOLUME;
 }
@@ -159,6 +159,21 @@ function fadeOut(audio, onDone) {
     }, FADE_INTERVAL);
 }
 
+function fadePause(audio) {
+    if (audio._fadeTimer) { clearInterval(audio._fadeTimer); audio._fadeTimer = null; }
+    const step = (MUSIC_VOLUME / (FADE_DURATION / FADE_INTERVAL));
+    audio._fadeTimer = setInterval(() => {
+        if (audio.volume <= step) {
+            audio.volume = 0;
+            audio.pause();
+            clearInterval(audio._fadeTimer);
+            audio._fadeTimer = null;
+        } else {
+            audio.volume -= step;
+        }
+    }, FADE_INTERVAL);
+}
+
 function fadeIn(audio) {
     if (audio._fadeTimer) { clearInterval(audio._fadeTimer); audio._fadeTimer = null; }
     const target = MUSIC_VOLUME * VOLUME_LEVELS[volumeIndex].value;
@@ -186,7 +201,7 @@ function playMusic(trackName) {
         fadeOut(outgoing);
     }
     currentTrack = trackName;
-    const newAudio = new Audio(`assets/${trackName}.mp3`);
+    const newAudio = new Audio(`assets/music/${trackName}.mp3`);
     newAudio.loop = true;
     currentAudio = newAudio;
     fadeIn(newAudio);
@@ -252,6 +267,22 @@ async function init() {
         });
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') document.getElementById('rewind-modal').setAttribute('hidden', '');
+        });
+
+        // Pause music when the tab/window loses focus, resume when it returns
+        document.addEventListener('visibilitychange', () => {
+            if (!currentAudio) return;
+            if (document.hidden) {
+                fadePause(currentAudio);
+            } else {
+                fadeIn(currentAudio);
+            }
+        });
+        window.addEventListener('blur', () => {
+            if (currentAudio) fadePause(currentAudio);
+        });
+        window.addEventListener('focus', () => {
+            if (currentAudio) fadeIn(currentAudio);
         });
 
         // Auto-start appropriate game state
