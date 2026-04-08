@@ -527,6 +527,9 @@ function loadGame() {
 
         // Show current choices
         continueStory();
+
+        // Jump to the bottom so the player lands at the current point in the story
+        storyContainer.scrollTop = storyContainer.scrollHeight;
     } catch (error) {
         console.error('Failed to load game:', error);
         showError('Failed to load saved game. Starting new game.');
