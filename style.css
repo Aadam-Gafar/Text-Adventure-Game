@@ -624,7 +624,6 @@ main::-webkit-scrollbar-thumb:hover {
 }
 
 .scroll-bottom-btn:hover {
-    background: rgba(140, 100, 40, 0.12);
     border-color: var(--sepia);
 }
 

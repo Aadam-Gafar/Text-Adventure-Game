@@ -562,6 +562,7 @@ function continueStory(trackChanges = false) {
     // Save progress
     saveGame();
     updateInventory();
+    updateScrollBtn();
 }
 
 /**
@@ -739,14 +740,16 @@ function hideScrollBtn() {
     }, { once: true });
 }
 
-storyContainer.addEventListener('scroll', () => {
+function updateScrollBtn() {
     const distanceFromBottom = storyContainer.scrollHeight - storyContainer.scrollTop - storyContainer.clientHeight;
     if (distanceFromBottom > 80) {
         if (scrollBottomBtn.hasAttribute('hidden')) showScrollBtn();
     } else {
         hideScrollBtn();
     }
-});
+}
+
+storyContainer.addEventListener('scroll', updateScrollBtn);
 
 scrollBottomBtn.addEventListener('click', () => {
     storyContainer.scrollTo({ top: storyContainer.scrollHeight, behavior: 'smooth' });
