@@ -230,30 +230,81 @@ inventoryToggle.addEventListener('click', () => {
 
 function buildInvGatedChoiceTexts(storyJSON) {
     const texts = new Set();
+
+    // Find the object at the end of an array that holds choice bodies (c-0, c-1, …)
+    function getChoiceBodies(arr) {
+        for (let i = arr.length - 1; i >= 0; i--) {
+            const item = arr[i];
+            if (item && typeof item === 'object' && !Array.isArray(item) &&
+                Object.keys(item).some(k => /^c-\d+$/.test(k))) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    // Returns true if the body array sets any of the given inv_ vars to false
+    // Pattern in compiled JSON: "ev", false, "/ev", {"VAR=": "inv_xxx", "re": true}
+    function bodyDropsInvVar(body, invVarsChecked) {
+        for (let i = 3; i < body.length; i++) {
+            const token = body[i];
+            if (token && typeof token === 'object' && 'VAR=' in token &&
+                invVarsChecked.has(token['VAR=']) &&
+                body[i - 3] === 'ev' && body[i - 2] === false && body[i - 1] === '/ev') {
+                return true;
+            }
+        }
+        return false;
+    }
+
     function scanArray(arr) {
+        const bodies = getChoiceBodies(arr);
+
         for (let i = 0; i < arr.length; i++) {
             const item = arr[i];
             if (item && typeof item === 'object' && '*' in item) {
-                // Found a choice marker — scan backward through condition tokens
+                // Scan backward through condition tokens to find positively-checked inv_ vars
+                // (vars that require inv_ = true, i.e. NOT immediately followed by "!" in forward order)
                 let j = i - 1;
                 if (arr[j] === '/ev') j--;          // skip /ev
-                let hasInv = false;
+
+                const invVarsChecked = new Set();
+                let nextIsNegated = false;
                 let choiceText = null;
+
                 while (j >= 0 && arr[j] !== '/str') {
                     const t = arr[j];
-                    if (t && typeof t === 'object' && 'VAR?' in t && t['VAR?'].startsWith('inv_')) {
-                        hasInv = true;
+                    if (t === '!') {
+                        // In backward order, "!" precedes the VAR? it negates in forward order
+                        nextIsNegated = true;
+                    } else if (t && typeof t === 'object' && 'VAR?' in t && t['VAR?'].startsWith('inv_')) {
+                        if (!nextIsNegated) invVarsChecked.add(t['VAR?']);
+                        nextIsNegated = false;
+                    } else {
+                        nextIsNegated = false;
                     }
                     j--;
                 }
-                // arr[j] is now '/str'; text is at j-1, 'str' at j-2
-                if (hasInv && j >= 1) {
+
+                // arr[j] is now '/str'; text is at j-1
+                if (invVarsChecked.size > 0 && j >= 1) {
                     const raw = arr[j - 1];
                     if (typeof raw === 'string' && raw.startsWith('^')) {
                         choiceText = raw.slice(1);
                     }
                 }
-                if (choiceText) texts.add(choiceText);
+
+                // Only style if the body doesn't drop (set to false) one of the checked inv_ vars
+                // — that would make it a "put down" rather than a "use"
+                if (choiceText && bodies) {
+                    const pathMatch = /c-(\d+)$/.exec(item['*']);
+                    if (pathMatch) {
+                        const body = bodies['c-' + pathMatch[1]];
+                        if (body && !bodyDropsInvVar(body, invVarsChecked)) {
+                            texts.add(choiceText);
+                        }
+                    }
+                }
             }
             if (Array.isArray(item)) {
                 scanArray(item);
