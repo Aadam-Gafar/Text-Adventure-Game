@@ -631,6 +631,15 @@ function displayChoices() {
 }
 
 /**
+ * Scroll an element to the top of the story container
+ */
+function scrollToTop(el) {
+    if (!el) return;
+    const top = el.getBoundingClientRect().top - storyContainer.getBoundingClientRect().top + storyContainer.scrollTop;
+    storyContainer.scrollTo({ top, behavior: 'smooth' });
+}
+
+/**
  * Handle choice button click
  */
 function handleChoiceClick(choice, index) {
@@ -638,7 +647,7 @@ function handleChoiceClick(choice, index) {
     addPlayerChoice(choice.text);
     storyHistory.push({ text: choice.text, isChoice: true });
 
-    // Mark where new content will begin (the player choice just added)
+    // Mark the player choice element — this is what we scroll to
     const scrollAnchor = storyContainer.lastElementChild;
 
     // Make the choice in the story
@@ -648,7 +657,7 @@ function handleChoiceClick(choice, index) {
     continueStory(true);
 
     // Scroll so the player choice sits at the top of the viewport
-    scrollAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    scrollToTop(scrollAnchor);
 }
 
 /**
@@ -676,8 +685,14 @@ function handleRewind() {
         storyContainer.removeChild(storyContainer.lastChild);
     }
 
+    // Mark the last restored element so we can find the first new element after continueStory
+    const scrollAnchor = storyContainer.lastElementChild;
+
     // Advance to the next choice point from the restored state
     continueStory();
+
+    // Scroll so the first new element sits at the top of the viewport
+    scrollToTop(scrollAnchor ? scrollAnchor.nextElementSibling : storyContainer.firstElementChild);
 }
 
 /**
