@@ -6,7 +6,9 @@ const themeBtn = document.getElementById('theme-btn');
 const dyslexicBtn  = document.getElementById('dyslexic-btn');
 const zoomInBtns  = document.querySelectorAll('.zoom-in-btn');
 const zoomOutBtns = document.querySelectorAll('.zoom-out-btn');
-const menuBtn      = document.getElementById('menu-btn');
+const menuBtn          = document.getElementById('menu-btn');
+const inventoryBar     = document.getElementById('inventory-bar');
+const inventoryToggle  = document.getElementById('inventory-toggle');
 
 // Mobile menu toggle
 menuBtn.addEventListener('click', () => {
@@ -215,6 +217,59 @@ function stopMusic() {
     currentTrack = null;
 }
 
+// Inventory
+let invVarNames = [];
+
+inventoryToggle.addEventListener('click', () => {
+    const open = inventoryBar.getAttribute('aria-expanded') === 'true';
+    const next = open ? 'false' : 'true';
+    inventoryBar.setAttribute('aria-expanded', next);
+    inventoryToggle.setAttribute('aria-expanded', next);
+});
+
+function getInvVariableNames(storyJSON) {
+    const names = [];
+    for (const item of storyJSON.root) {
+        if (item && typeof item === 'object' && 'global decl' in item) {
+            for (const token of item['global decl']) {
+                if (token && typeof token === 'object' && 'VAR=' in token) {
+                    const name = token['VAR='];
+                    if (name.startsWith('inv_')) names.push(name);
+                }
+            }
+            break;
+        }
+    }
+    return names;
+}
+
+function formatInvName(varName) {
+    return varName
+        .replace(/^inv_/, '')
+        .split('_')
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+}
+
+function updateInventory() {
+    if (!story || invVarNames.length === 0) return;
+    const list = document.getElementById('inventory-list');
+    list.innerHTML = '';
+    const held = invVarNames.filter(name => story.variablesState[name] === true);
+    if (held.length === 0) {
+        const li = document.createElement('li');
+        li.className = 'inventory-empty';
+        li.textContent = 'Nothing carried';
+        list.appendChild(li);
+    } else {
+        held.forEach(name => {
+            const li = document.createElement('li');
+            li.textContent = formatInvName(name);
+            list.appendChild(li);
+        });
+    }
+}
+
 /**
  * Initialize the application
  */
@@ -231,6 +286,7 @@ async function init() {
             throw new Error('Failed to load story.json');
         }
         const storyJSON = await response.json();
+        invVarNames = getInvVariableNames(storyJSON);
         story = new inkjs.Story(storyJSON);
 
         // Wire up event listeners
@@ -437,6 +493,7 @@ function continueStory() {
 
     // Save progress
     saveGame();
+    updateInventory();
 }
 
 /**

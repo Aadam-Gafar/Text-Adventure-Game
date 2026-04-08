@@ -1,11 +1,11 @@
 // STORY VARIABLES - These update throughout the story
 VAR first_visit = true
-VAR has_key = false
+VAR inv_key = false
 VAR power_restored = false
 
 // CHECKPOINT VARIABLES - These store the story variables at specific points
 VAR cp_first_visit = true
-VAR cp_has_key = false
+VAR cp_inv_key = false
 VAR cp_power_restored = false
 
 // ===================================
@@ -17,12 +17,12 @@ VAR cp_power_restored = false
 // FUNCTIONS
 === function save_checkpoint() ===
 ~ cp_first_visit = first_visit
-~ cp_has_key = has_key
+~ cp_inv_key = inv_key
 ~ cp_power_restored = power_restored
 
 === function load_checkpoint() ===
 ~ first_visit = cp_first_visit
-~ has_key = cp_has_key
+~ inv_key = cp_inv_key
 ~ power_restored = cp_power_restored
 
 // === CHECKPOINT DISPLAY ===
@@ -84,8 +84,8 @@ In the center of this mechanical grove sat a pedestal, and upon it, a button. Be
 
 {power_restored:The key within the lock was already turned, left as you had moved it in the hours before. Because of this, the room was no longer a tomb. The blue lanterns did not merely flicker; they burned with a steady, regained purpose. The crystalline vessels hummed with a low, vibrant energy, and the coiled tubes were warm to the touch, for the blood of the mountain was flowing once more. The button sat waiting, live and dangerous, a bridge between the stillness of the past and the thunder of the machine.}
 
-+ {has_key && !power_restored} [Activate the button] -> power_restored_sequence
-+ {not has_key} [Inspect the button] -> examine_button
++ {inv_key && !power_restored} [Activate the button] -> power_restored_sequence
++ {not inv_key} [Inspect the button] -> examine_button
 + [Leave this chamber] -> enter_facility
 
 = examine_button
@@ -95,8 +95,9 @@ The button sat silent in its housing, a cold eye of metal. Beside it, the keyhol
 = power_restored_sequence
 # MUSIC: dwemer_music
 ~ power_restored = true
+~ inv_key = false
 
-You took the key and fitted it into the lock. It was a heavy piece of brass, cold and etched with the sharp lines of the Deep Folk, and it slid home with a click that was small but absolute. You turned it.
+You took the key and fitted it into the lock. It was a heavy piece of brass, cold and etched with the sharp lines of the Deep Folk, and it slid home with a click that was small but absolute. You turned it and watched as In an instant the device clamped around the key and swallowed it whole.
 
 There was a moment of profound silence, the indrawn breath of the earth. Then, the light came.
 
@@ -118,15 +119,16 @@ They are the metal children of the Deep Folk. One among them looms larger than t
 
 The air is cold and the silence is absolute, save for the thrumming of the pipes behind you. To step further into the black is to walk into the mouth of a mountain that has forgotten the sun. It is too dark to continue.
 
-{not has_key: Yet, as you look down, a spark of something catches the dying blue light from the hallway. There, half-buried in the dust of the stone floor, lies a glint of brass. You reach down and brush away the grime of centuries. It is a key - heavy, etched with the sharp, geometric script of the Dwemer, and cold as the ice of the Sea of Ghosts. It lies in your palm with a strange weight, a small piece of order in a world of ruin.}
+{not inv_key: Yet, as you look down, a spark of something catches the dying blue light from the hallway. There, half-buried in the dust of the stone floor, lies a glint of brass. You reach down and brush away the grime of centuries. It is a key - heavy, etched with the sharp, geometric script of the Dwemer, and cold as the ice of the Sea of Ghosts. It lies in your palm with a strange weight, a small piece of order in a world of ruin.}
     
-    + {not has_key} [Pick up the key] 
-        ~ has_key = true
-        You pick up the key. 
-        
+    + {not inv_key} [Pick up the key] 
+        ~ inv_key = true
         -> set_checkpoint ->
         -> enter_facility
-    + {not has_key} [Leave the key] -> enter_facility
+    + {not inv_key} [Leave the key] -> enter_facility
+    + {inv_key} [Put the key back]
+        ~ inv_key = false
+        -> enter_facility
     + [Leave this chamber] -> enter_facility
     
 - else:
