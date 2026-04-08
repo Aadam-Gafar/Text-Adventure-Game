@@ -13,12 +13,6 @@ VAR inv_Resonating_Aetheric_Harmonization_Calibration_Spanner_of_the_Seventh_Hig
 
 * [Start] -> introduction // Gets player to interact so webpage can load files to play music
 
-// === CHECKPOINT DISPLAY ===
-=== set_checkpoint ===
-═══ CHECKPOINT ═══
-# CHECKPOINT
-->->
-
 // === KNOTS - Major story sections ===
 === introduction ===
 # MUSIC: skyrim_music
@@ -156,7 +150,7 @@ The air is cold and the silence is absolute, save for the thrumming of the pipes
     + [Leave this chamber] -> enter_facility
     
 - else:
-    -> set_checkpoint ->
+    # CHECKPOINT
     The chamber was a tomb no longer. The light was a white fire that filled every corner, chasing the shadows from the high, vaulted ceiling and reflecting off the great wheels of bronze. They turned now, heavy and slow, their teeth interlocking with a precision that was beautiful and cold. There was no friction, only the rhythmic, driving force of the mountain’s heart.
 
 In the center of this turning world stood the Centurion.

@@ -450,6 +450,8 @@ function loadGame() {
         storyHistory.forEach(item => {
             if (item.isChoice) {
                 addPlayerChoice(item.text);
+            } else if (item.isCheckpoint) {
+                addCheckpointNotification(false);
             } else if (item.isItemChange) {
                 addItemChange(item.text.slice(2), item.gained, false);
             } else {
@@ -526,6 +528,7 @@ function continueStory(trackChanges = false) {
                 checkpointInkState = story.state.ToJson();
                 checkpointHistoryLength = storyHistory.length;
                 checkpointTrack = currentTrack;
+                segments.push({ isCheckpoint: true });
             }
         }
         if (text) segments.push(text);
@@ -541,8 +544,12 @@ function continueStory(trackChanges = false) {
     }
 
     // Now render the collected story text
-    for (const text of segments) {
-        addStoryText(text, true);
+    for (const segment of segments) {
+        if (segment && segment.isCheckpoint) {
+            addCheckpointNotification();
+        } else {
+            addStoryText(segment, true);
+        }
     }
 
     // Display choices or show ending
@@ -670,6 +677,19 @@ function handleRewind() {
 
     // Advance to the next choice point from the restored state
     continueStory();
+}
+
+/**
+ * Add a checkpoint notification line to the container
+ */
+function addCheckpointNotification(addToHistory = true) {
+    const p = document.createElement('p');
+    p.className = 'item-change checkpoint';
+    p.textContent = 'Checkpoint saved';
+    storyContainer.appendChild(p);
+    if (addToHistory) {
+        storyHistory.push({ isCheckpoint: true });
+    }
 }
 
 /**

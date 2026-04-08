@@ -21,6 +21,7 @@
     --crimson:         #7a1c1c;
     --gain:            #3a6b3e;
     --loss:            #7a1c1c;
+    --checkpoint:      #2a5a8b;
     --border:          #c9aa7c;
     --border-dark:     #a07848;
 }
@@ -36,6 +37,7 @@
     --crimson:         #8b2a2a;
     --gain:            #5a9e5e;
     --loss:            #8b2a2a;
+    --checkpoint:      #4a8abf;
     --border:          #333333;
     --border-dark:     #444444;
 }
@@ -245,6 +247,7 @@ main::-webkit-scrollbar-thumb:hover {
 
 .item-change.gain { color: var(--gain); }
 .item-change.loss { color: var(--loss); }
+.item-change.checkpoint { color: var(--checkpoint); }
 
 /* ── Player choice ───────────────────────────────── */
 
