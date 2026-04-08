@@ -6,7 +6,9 @@ const themeBtn = document.getElementById('theme-btn');
 const dyslexicBtn  = document.getElementById('dyslexic-btn');
 const zoomInBtns  = document.querySelectorAll('.zoom-in-btn');
 const zoomOutBtns = document.querySelectorAll('.zoom-out-btn');
-const menuBtn      = document.getElementById('menu-btn');
+const menuBtn          = document.getElementById('menu-btn');
+const inventoryBar     = document.getElementById('inventory-bar');
+const inventoryToggle  = document.getElementById('inventory-toggle');
 
 // Mobile menu toggle
 menuBtn.addEventListener('click', () => {
@@ -215,6 +217,101 @@ function stopMusic() {
     currentTrack = null;
 }
 
+// Inventory
+let invVarNames = [];
+let invGatedChoiceTexts = new Set();
+
+inventoryToggle.addEventListener('click', () => {
+    const open = inventoryBar.getAttribute('aria-expanded') === 'true';
+    const next = open ? 'false' : 'true';
+    inventoryBar.setAttribute('aria-expanded', next);
+    inventoryToggle.setAttribute('aria-expanded', next);
+});
+
+function buildInvGatedChoiceTexts(storyJSON) {
+    const texts = new Set();
+    function scanArray(arr) {
+        for (let i = 0; i < arr.length; i++) {
+            const item = arr[i];
+            if (item && typeof item === 'object' && '*' in item) {
+                // Found a choice marker — scan backward through condition tokens
+                let j = i - 1;
+                if (arr[j] === '/ev') j--;          // skip /ev
+                let hasInv = false;
+                let choiceText = null;
+                while (j >= 0 && arr[j] !== '/str') {
+                    const t = arr[j];
+                    if (t && typeof t === 'object' && 'VAR?' in t && t['VAR?'].startsWith('inv_')) {
+                        hasInv = true;
+                    }
+                    j--;
+                }
+                // arr[j] is now '/str'; text is at j-1, 'str' at j-2
+                if (hasInv && j >= 1) {
+                    const raw = arr[j - 1];
+                    if (typeof raw === 'string' && raw.startsWith('^')) {
+                        choiceText = raw.slice(1);
+                    }
+                }
+                if (choiceText) texts.add(choiceText);
+            }
+            if (Array.isArray(item)) {
+                scanArray(item);
+            } else if (item && typeof item === 'object') {
+                for (const val of Object.values(item)) {
+                    if (Array.isArray(val)) scanArray(val);
+                }
+            }
+        }
+    }
+    scanArray(storyJSON.root);
+    return texts;
+}
+
+function getInvVariableNames(storyJSON) {
+    const names = [];
+    for (const item of storyJSON.root) {
+        if (item && typeof item === 'object' && 'global decl' in item) {
+            for (const token of item['global decl']) {
+                if (token && typeof token === 'object' && 'VAR=' in token) {
+                    const name = token['VAR='];
+                    if (name.startsWith('inv_')) names.push(name);
+                }
+            }
+            break;
+        }
+    }
+    return names;
+}
+
+function formatInvName(varName) {
+    return varName
+        .replace(/^inv_/, '')
+        .split('_')
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+}
+
+function updateInventory() {
+    if (!story || invVarNames.length === 0) return;
+    const list = document.getElementById('inventory-list');
+    list.innerHTML = '';
+    const held = invVarNames.filter(name => story.variablesState[name] === true)
+                            .sort((a, b) => formatInvName(a).localeCompare(formatInvName(b)));
+    if (held.length === 0) {
+        const li = document.createElement('li');
+        li.className = 'inventory-empty';
+        li.textContent = 'Empty';
+        list.appendChild(li);
+    } else {
+        held.forEach(name => {
+            const li = document.createElement('li');
+            li.textContent = formatInvName(name);
+            list.appendChild(li);
+        });
+    }
+}
+
 /**
  * Initialize the application
  */
@@ -231,6 +328,8 @@ async function init() {
             throw new Error('Failed to load story.json');
         }
         const storyJSON = await response.json();
+        invVarNames = getInvVariableNames(storyJSON);
+        invGatedChoiceTexts = buildInvGatedChoiceTexts(storyJSON);
         story = new inkjs.Story(storyJSON);
 
         // Wire up event listeners
@@ -351,6 +450,8 @@ function loadGame() {
         storyHistory.forEach(item => {
             if (item.isChoice) {
                 addPlayerChoice(item.text);
+            } else if (item.isItemChange) {
+                addItemChange(item.text.slice(2), item.gained, false);
             } else {
                 addStoryText(item.text, false);
             }
@@ -404,14 +505,18 @@ function saveGame() {
 /**
  * Continue the story - read all available content and show choices
  */
-function continueStory() {
+function continueStory(trackChanges = false) {
     // Remove any existing choice buttons
     const existingChoices = storyContainer.querySelector('.choices');
     if (existingChoices) {
         existingChoices.remove();
     }
 
-    // Read all available story content
+    // Snapshot inv_ state before the story runs (variables change during Continue())
+    const prevInv = trackChanges ? Object.fromEntries(invVarNames.map(n => [n, story.variablesState[n]])) : null;
+
+    // Collect all text segments first — variables finish changing before we render anything
+    const segments = [];
     while (story.canContinue) {
         const text = story.Continue().trim();
         for (const tag of story.currentTags) {
@@ -423,9 +528,21 @@ function continueStory() {
                 checkpointTrack = currentTrack;
             }
         }
-        if (text) {
-            addStoryText(text, true);
+        if (text) segments.push(text);
+    }
+
+    // Render inventory changes before the story text
+    if (prevInv) {
+        for (const name of invVarNames) {
+            if (prevInv[name] !== story.variablesState[name]) {
+                addItemChange(name, story.variablesState[name] === true);
+            }
         }
+    }
+
+    // Now render the collected story text
+    for (const text of segments) {
+        addStoryText(text, true);
     }
 
     // Display choices or show ending
@@ -437,6 +554,7 @@ function continueStory() {
 
     // Save progress
     saveGame();
+    updateInventory();
 }
 
 /**
@@ -451,6 +569,21 @@ function addStoryText(text, addToHistory = true) {
 
     if (addToHistory) {
         storyHistory.push({ text, isChoice: false });
+    }
+}
+
+/**
+ * Add an inventory gain/loss line to the container
+ */
+function addItemChange(varName, gained, addToHistory = true) {
+    const label = formatInvName(varName);
+    const text = `${gained ? '+' : '−'} ${label}`;
+    const p = document.createElement('p');
+    p.className = `item-change ${gained ? 'gain' : 'loss'}`;
+    p.textContent = text;
+    storyContainer.appendChild(p);
+    if (addToHistory) {
+        storyHistory.push({ text, isChoice: false, isItemChange: true, gained });
     }
 }
 
@@ -476,7 +609,8 @@ function displayChoices() {
 
     story.currentChoices.forEach((choice, index) => {
         const button = document.createElement('button');
-        button.className = 'choice-btn';
+        const isInvGated = invGatedChoiceTexts.has(choice.text);
+        button.className = isInvGated ? 'choice-btn inv-gated' : 'choice-btn';
         button.textContent = choice.text;
         button.setAttribute('aria-label', `Choice: ${choice.text}`);
 
@@ -502,8 +636,8 @@ function handleChoiceClick(choice, index) {
     // Make the choice in the story
     story.ChooseChoiceIndex(index);
 
-    // Continue the story
-    continueStory();
+    // Continue the story (track inv_ changes to show gain/loss lines)
+    continueStory(true);
 
     // Scroll so the player choice sits at the top of the viewport
     scrollAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });

@@ -48,6 +48,21 @@
             </div>
         </header>
 
+        <!-- Inventory bar -->
+        <div id="inventory-bar" aria-expanded="false">
+            <button id="inventory-toggle" aria-expanded="false" aria-controls="inventory-panel">
+                <span>Inventory</span>
+                <span class="inventory-chevron" aria-hidden="true"></span>
+            </button>
+            <div class="inventory-panel-wrapper" id="inventory-panel" role="region" aria-label="Inventory">
+                <div>
+                    <div class="inventory-panel-inner">
+                        <ul id="inventory-list"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Main story area -->
         <main id="story-container" role="main">
             <!-- Story text and choices append here dynamically -->
