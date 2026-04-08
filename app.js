@@ -95,45 +95,13 @@ zoomOutBtns.forEach(btn => {
     });
 });
 
-// Music (declared early so volume controls can reference them)
+// Music
 let currentAudio = null;
 let currentTrack = null;
 
 const MUSIC_VOLUME  = 0.5;
 const FADE_DURATION = 1500; // ms
 const FADE_INTERVAL = 50;   // ms between steps
-
-// Volume
-const VOLUME_KEY = 'dwemer_volume';
-const volumeBtn  = document.getElementById('volume-btn');
-const volumeIcon = document.getElementById('volume-icon');
-
-const VOLUME_LEVELS = [
-    { label: 'High',   value: 1.00, icon: 'sound-high' },
-    { label: 'Low',    value: 0.66, icon: 'sound-low'  },
-    { label: 'Min',    value: 0.33, icon: 'sound-min'  },
-    { label: 'Off',    value: 0.00, icon: 'sound-off'  },
-];
-
-let volumeIndex = 0;
-
-function applyVolume(index) {
-    volumeIndex = index;
-    const level = VOLUME_LEVELS[index];
-    localStorage.setItem(VOLUME_KEY, index);
-    volumeIcon.src = `assets/icons/${level.icon}.svg`;
-    volumeBtn.setAttribute('aria-label', `Volume: ${level.label}`);
-    if (currentAudio) currentAudio.volume = level.value * MUSIC_VOLUME;
-}
-
-(function initVolume() {
-    const saved = parseInt(localStorage.getItem(VOLUME_KEY), 10);
-    applyVolume((saved >= 0 && saved < VOLUME_LEVELS.length) ? saved : 0);
-})();
-
-volumeBtn.addEventListener('click', () => {
-    applyVolume((volumeIndex + 1) % VOLUME_LEVELS.length);
-});
 
 // State
 let story;
@@ -178,7 +146,7 @@ function fadePause(audio) {
 
 function fadeIn(audio) {
     if (audio._fadeTimer) { clearInterval(audio._fadeTimer); audio._fadeTimer = null; }
-    const target = MUSIC_VOLUME * VOLUME_LEVELS[volumeIndex].value;
+    const target = MUSIC_VOLUME;
     audio.volume = 0;
     audio.play().catch(err => console.error('[playMusic] failed:', err));
     if (target === 0) return;
