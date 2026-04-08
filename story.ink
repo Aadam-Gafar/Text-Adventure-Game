@@ -3,33 +3,16 @@ VAR first_visit = true
 VAR inv_key = false
 VAR power_restored = false
 
-// CHECKPOINT VARIABLES - These store the story variables at specific points
-VAR cp_first_visit = true
-VAR cp_inv_key = false
-VAR cp_power_restored = false
-
 // ===================================
 // STORY START
 // ===================================
 
 * [Start] -> introduction // Gets player to interact so webpage can load files to play music
 
-// FUNCTIONS
-=== function save_checkpoint() ===
-~ cp_first_visit = first_visit
-~ cp_inv_key = inv_key
-~ cp_power_restored = power_restored
-
-=== function load_checkpoint() ===
-~ first_visit = cp_first_visit
-~ inv_key = cp_inv_key
-~ power_restored = cp_power_restored
-
 // === CHECKPOINT DISPLAY ===
 === set_checkpoint ===
 ═══ CHECKPOINT ═══
 # CHECKPOINT
-~ save_checkpoint()
 ->->
 
 // === KNOTS - Major story sections ===
