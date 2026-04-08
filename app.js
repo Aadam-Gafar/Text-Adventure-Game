@@ -300,7 +300,7 @@ function updateInventory() {
     if (held.length === 0) {
         const li = document.createElement('li');
         li.className = 'inventory-empty';
-        li.textContent = 'Nothing carried';
+        li.textContent = 'Empty';
         list.appendChild(li);
     } else {
         held.forEach(name => {
@@ -449,6 +449,8 @@ function loadGame() {
         storyHistory.forEach(item => {
             if (item.isChoice) {
                 addPlayerChoice(item.text);
+            } else if (item.isItemChange) {
+                addItemChange(item.text.slice(2), item.gained, false);
             } else {
                 addStoryText(item.text, false);
             }
@@ -502,14 +504,18 @@ function saveGame() {
 /**
  * Continue the story - read all available content and show choices
  */
-function continueStory() {
+function continueStory(trackChanges = false) {
     // Remove any existing choice buttons
     const existingChoices = storyContainer.querySelector('.choices');
     if (existingChoices) {
         existingChoices.remove();
     }
 
-    // Read all available story content
+    // Snapshot inv_ state before the story runs (variables change during Continue())
+    const prevInv = trackChanges ? Object.fromEntries(invVarNames.map(n => [n, story.variablesState[n]])) : null;
+
+    // Collect all text segments first — variables finish changing before we render anything
+    const segments = [];
     while (story.canContinue) {
         const text = story.Continue().trim();
         for (const tag of story.currentTags) {
@@ -521,9 +527,21 @@ function continueStory() {
                 checkpointTrack = currentTrack;
             }
         }
-        if (text) {
-            addStoryText(text, true);
+        if (text) segments.push(text);
+    }
+
+    // Render inventory changes before the story text
+    if (prevInv) {
+        for (const name of invVarNames) {
+            if (prevInv[name] !== story.variablesState[name]) {
+                addItemChange(name, story.variablesState[name] === true);
+            }
         }
+    }
+
+    // Now render the collected story text
+    for (const text of segments) {
+        addStoryText(text, true);
     }
 
     // Display choices or show ending
@@ -550,6 +568,21 @@ function addStoryText(text, addToHistory = true) {
 
     if (addToHistory) {
         storyHistory.push({ text, isChoice: false });
+    }
+}
+
+/**
+ * Add an inventory gain/loss line to the container
+ */
+function addItemChange(varName, gained, addToHistory = true) {
+    const label = formatInvName(varName);
+    const text = `${gained ? '+' : '−'} ${label}`;
+    const p = document.createElement('p');
+    p.className = `item-change ${gained ? 'gain' : 'loss'}`;
+    p.textContent = text;
+    storyContainer.appendChild(p);
+    if (addToHistory) {
+        storyHistory.push({ text, isChoice: false, isItemChange: true, gained });
     }
 }
 
@@ -602,8 +635,8 @@ function handleChoiceClick(choice, index) {
     // Make the choice in the story
     story.ChooseChoiceIndex(index);
 
-    // Continue the story
-    continueStory();
+    // Continue the story (track inv_ changes to show gain/loss lines)
+    continueStory(true);
 
     // Scroll so the player choice sits at the top of the viewport
     scrollAnchor.scrollIntoView({ behavior: 'smooth', block: 'start' });

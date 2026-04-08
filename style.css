@@ -19,6 +19,8 @@
     --sepia:           #8c6d3f;
     --sepia-light:     #b8956a;
     --crimson:         #7a1c1c;
+    --gain:            #3a6b3e;
+    --loss:            #7a1c1c;
     --border:          #c9aa7c;
     --border-dark:     #a07848;
 }
@@ -32,6 +34,8 @@
     --sepia:           #9a8060;
     --sepia-light:     #6a6050;
     --crimson:         #8b2a2a;
+    --gain:            #5a9e5e;
+    --loss:            #8b2a2a;
     --border:          #333333;
     --border-dark:     #444444;
 }
@@ -228,6 +232,18 @@ main::-webkit-scrollbar-thumb:hover {
     margin-top: 0.06em;
     color: var(--crimson);
 }
+
+/* ── Inventory change lines ──────────────────────── */
+
+.item-change {
+    font-size: 0.9rem;
+    font-style: italic;
+    margin-bottom: 0.75rem;
+    animation: manuscript-reveal 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+}
+
+.item-change.gain { color: var(--gain); }
+.item-change.loss { color: var(--loss); }
 
 /* ── Player choice ───────────────────────────────── */
 
@@ -512,7 +528,7 @@ main::-webkit-scrollbar-thumb:hover {
     header.menu-open .header-actions .header-btn:nth-last-child(7) { transition-delay: 125ms; }
     header.menu-open .header-actions .header-btn:nth-last-child(8) { transition-delay: 150ms; }
     #inventory-toggle {
-        padding: 0.3rem 1.1rem;
+        padding: 0.6rem 1.1rem;
     }
 
     .inventory-panel-inner {
@@ -721,7 +737,7 @@ main::-webkit-scrollbar-thumb:hover {
     align-items: center;
     justify-content: center;
     gap: 0.45rem;
-    padding: 0.3rem 1.75rem;
+    padding: 0.6rem 1.75rem;
     font-family: 'IM Fell English SC', Georgia, serif;
     font-size: 0.68rem;
     letter-spacing: 0.16em;
@@ -752,14 +768,11 @@ main::-webkit-scrollbar-thumb:hover {
 .inventory-panel-wrapper {
     display: grid;
     grid-template-rows: 0fr;
-    transition: grid-template-rows 0.45s cubic-bezier(0.25, 0.1, 0.25, 1),
-                border-color 0.3s;
-    border-top: 1px solid transparent;
+    transition: grid-template-rows 0.45s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 #inventory-bar[aria-expanded="true"] .inventory-panel-wrapper {
     grid-template-rows: 1fr;
-    border-top-color: var(--border);
 }
 
 .inventory-panel-wrapper > div {
