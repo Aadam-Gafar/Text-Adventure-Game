@@ -69,6 +69,18 @@
         </div>
     </div>
 
+    <!-- Rewind confirmation modal -->
+    <div id="rewind-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="rewind-modal-title" hidden>
+        <div class="modal">
+            <h2 id="rewind-modal-title">Rewind to checkpoint?</h2>
+            <p>Your progress since the last checkpoint will be lost.</p>
+            <div class="modal-actions">
+                <button id="rewind-modal-cancel-btn" class="modal-btn modal-btn-cancel">Cancel</button>
+                <button id="rewind-modal-confirm-btn" class="modal-btn modal-btn-confirm">Rewind</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Load inkjs locally -->
     <script src="ink.js"></script>
     <!-- Load our app -->

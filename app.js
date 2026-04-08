@@ -236,7 +236,23 @@ async function init() {
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') document.getElementById('restart-modal').setAttribute('hidden', '');
         });
-        rewindBtn.addEventListener('click', handleRewind);
+        rewindBtn.addEventListener('click', () => {
+            document.getElementById('rewind-modal').removeAttribute('hidden');
+            document.getElementById('rewind-modal-cancel-btn').focus();
+        });
+        document.getElementById('rewind-modal-cancel-btn').addEventListener('click', () => {
+            document.getElementById('rewind-modal').setAttribute('hidden', '');
+        });
+        document.getElementById('rewind-modal-confirm-btn').addEventListener('click', () => {
+            document.getElementById('rewind-modal').setAttribute('hidden', '');
+            handleRewind();
+        });
+        document.getElementById('rewind-modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) e.currentTarget.setAttribute('hidden', '');
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') document.getElementById('rewind-modal').setAttribute('hidden', '');
+        });
 
         // Auto-start appropriate game state
         if (hasSaveData()) {
