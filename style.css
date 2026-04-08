@@ -62,7 +62,7 @@ body {
     position: relative;
     max-width: 780px;
     margin: 0 auto;
-    height: 100vh;
+    height: 100dvh;
     display: flex;
     flex-direction: column;
     background: var(--parchment);
