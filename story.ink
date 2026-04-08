@@ -34,6 +34,7 @@ You stand before the threshold. The frost clings to your cloak, and your breath 
 === enter_facility ===
 {first_visit:
     # MUSIC: ruin_music
+    # CHECKPOINT
     ~ first_visit = false
     The doors yielded. They swung inward with a sound like thunder rolling in a deep canyon, heavy and final. The echoes went away into the dark and did not return. You stood on the threshold, and the air that came out of the throat of the mountain was dry and smelled of hot metal and the dust of ages.
 
@@ -150,8 +151,12 @@ The air is cold and the silence is absolute, save for the thrumming of the pipes
     + [Leave this chamber] -> enter_facility
     
 - else:
-    # CHECKPOINT
-    The chamber was a tomb no longer. The light was a white fire that filled every corner, chasing the shadows from the high, vaulted ceiling and reflecting off the great wheels of bronze. They turned now, heavy and slow, their teeth interlocking with a precision that was beautiful and cold. There was no friction, only the rhythmic, driving force of the mountain’s heart.
+    -> powered_room
+}
+
+= powered_room
+# CHECKPOINT
+The chamber was a tomb no longer. The light was a white fire that filled every corner, chasing the shadows from the high, vaulted ceiling and reflecting off the great wheels of bronze. They turned now, heavy and slow, their teeth interlocking with a precision that was beautiful and cold. There was no friction, only the rhythmic, driving force of the mountain’s heart.
 
 In the center of this turning world stood the Centurion.
 
@@ -159,8 +164,14 @@ It was a titan of brass and dwemer-metal, standing thrice the height of a man. I
 
 It did not strike. Instead, it tilted its massive, bearded head of bronze. Plumes of white vapor hissed from the joints of its neck, rhythmic and measured, like the breath of a man in the winter air. Its jaw moved with a heavy, mechanical clicking. It was a voice of brass, trying to find a language it had not spoken since the sun was young. It was trying to speak, and the sound was a lonely, grinding music that filled the hall, a ghost of a word caught in a throat of iron.
 
-    + [Listen to what he has to say] -> hello_world
-}
+- (centurion_opts)
++ [Examine the great wheels]
+    You stepped toward the nearest of the wheels. Up close, the scale was incomprehensible. Each tooth was the size of a man’s forearm, and they moved in near-silence - or rather, the noise had become so deep and constant that the ear interpreted it as stillness. The ancient grease that lubricated them was black but still fluid, still doing its work across the span of ages. You watched tooth meet tooth in perfect, inevitable sequence, and felt that you were witnessing a patience that had no interest in being witnessed.
+    -> centurion_opts
++ [Study the Centurion]
+    You moved closer. The Centurion did not look at you, but you had the distinct sense that it was aware of you. Some gyroscopic intelligence in its core tracked your position, its torso shifting by a fraction of a degree as you circled. The joints between its plates were seamless - no gap a blade could exploit, no weak point a smith could have identified. The furnace in its chest glowed orange through the vents in its breastplate, and the heat that radiated from it was not unpleasant. It was warm the way a hearth is warm. Something inside it was working hard at the business of being alive.
+    -> centurion_opts
++ [Listen to what he has to say] -> hello_world
 
 = hello_world
 The sound came not from lungs, but from the very core of the machine. It was a voice of grinding plates and escaping steam, a tectonic rattle that shook the dust from the high rafters.
