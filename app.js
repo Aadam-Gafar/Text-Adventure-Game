@@ -101,7 +101,8 @@ zoomOutBtns.forEach(btn => {
 let currentAudio = null;
 let currentTrack = null;
 
-const MUSIC_VOLUME  = 0.5;
+const MUSIC_VOLUME      = 0.5;
+const MUSIC_VOLUME_DUCK = MUSIC_VOLUME * 0.15; // volume while TTS is speaking
 const FADE_DURATION = 1500; // ms
 const FADE_INTERVAL = 50;   // ms between steps
 
@@ -160,6 +161,23 @@ function fadeIn(audio) {
             audio._fadeTimer = null;
         } else {
             audio.volume += step;
+        }
+    }, FADE_INTERVAL);
+}
+
+function fadeTo(audio, target) {
+    if (audio._fadeTimer) { clearInterval(audio._fadeTimer); audio._fadeTimer = null; }
+    if (audio.volume === target) return;
+    const steps = FADE_DURATION / FADE_INTERVAL;
+    const step = (target - audio.volume) / steps;
+    audio._fadeTimer = setInterval(() => {
+        const next = audio.volume + step;
+        if ((step > 0 && next >= target) || (step < 0 && next <= target)) {
+            audio.volume = target;
+            clearInterval(audio._fadeTimer);
+            audio._fadeTimer = null;
+        } else {
+            audio.volume = next;
         }
     }, FADE_INTERVAL);
 }
@@ -352,6 +370,7 @@ function setTTSState(newState) {
         ttsBtn.setAttribute('aria-label', 'Toggle text to speech');
         exitTTSMode();
         speechSynthesis.cancel();
+        if (currentAudio) fadeTo(currentAudio, MUSIC_VOLUME);
     } else if (newState === 'selecting') {
         ttsIcon.src = 'assets/icons/microphone.svg';
         ttsBtn.setAttribute('aria-label', 'Cancel text to speech');
@@ -420,6 +439,7 @@ function exitTTSMode() {
 
 function startTTSFrom(fromParagraph) {
     speechSynthesis.cancel();
+    if (currentAudio) fadeTo(currentAudio, MUSIC_VOLUME_DUCK);
 
     const allReadable = Array.from(
         storyContainer.querySelectorAll('.story-text, .player-choice')
