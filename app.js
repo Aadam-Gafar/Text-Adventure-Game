@@ -411,7 +411,7 @@ ttsPauseBtn.addEventListener('click', () => {
 });
 
 ttsSpeedBtn.addEventListener('click', () => {
-    ttsRate = ttsRate === 1 ? 1.8 : 1;
+    ttsRate = ttsRate === 1 ? 1.5 : 1;
     ttsSpeedIcon.src = ttsRate === 1 ? 'assets/icons/walking.svg' : 'assets/icons/running.svg';
     ttsSpeedBtn.setAttribute('aria-label', ttsRate === 1 ? 'Normal speed' : 'Fast speed');
     if (ttsState === 'playing' && ttsActive) {
