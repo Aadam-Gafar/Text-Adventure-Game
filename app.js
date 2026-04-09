@@ -357,11 +357,60 @@ function updateInventory() {
 
 let ttsState = 'off'; // 'off' | 'selecting' | 'playing'
 let ttsObserver = null;
+let ttsIsPaused = false;
+let ttsRate = 1;
+let currentTTSParagraph = null;
+let ttsActive = false; // guard: prevents speakNext restarting after cancel
+
+const ttsControls  = document.getElementById('tts-controls');
+const ttsPauseBtn  = document.getElementById('tts-pause-btn');
+const ttsPauseIcon = document.getElementById('tts-pause-icon');
+const ttsSpeedBtn  = document.getElementById('tts-speed-btn');
+const ttsSpeedIcon = document.getElementById('tts-speed-icon');
 
 // Hide the button entirely if the browser doesn't support TTS
 if (!('speechSynthesis' in window)) {
     ttsBtn.style.display = 'none';
 }
+
+function showTTSControls() {
+    ttsControls.classList.remove('is-hiding');
+    ttsControls.removeAttribute('hidden');
+    ttsControls.style.animationName = 'none';
+    ttsControls.offsetHeight; // force reflow
+    ttsControls.style.animationName = '';
+}
+
+function hideTTSControls() {
+    if (ttsControls.hasAttribute('hidden')) return;
+    ttsControls.classList.add('is-hiding');
+    ttsControls.addEventListener('animationend', () => {
+        ttsControls.classList.remove('is-hiding');
+        ttsControls.setAttribute('hidden', '');
+    }, { once: true });
+}
+
+ttsPauseBtn.addEventListener('click', () => {
+    if (ttsIsPaused) {
+        speechSynthesis.resume();
+        ttsIsPaused = false;
+        ttsPauseIcon.src = 'assets/icons/pause.svg';
+        ttsPauseBtn.setAttribute('aria-label', 'Pause');
+        if (currentAudio) fadeTo(currentAudio, MUSIC_VOLUME_DUCK);
+    } else {
+        speechSynthesis.pause();
+        ttsIsPaused = true;
+        ttsPauseIcon.src = 'assets/icons/play.svg';
+        ttsPauseBtn.setAttribute('aria-label', 'Resume');
+        if (currentAudio) fadeTo(currentAudio, MUSIC_VOLUME);
+    }
+});
+
+ttsSpeedBtn.addEventListener('click', () => {
+    ttsRate = ttsRate === 1 ? 1.8 : 1;
+    ttsSpeedIcon.src = ttsRate === 1 ? 'assets/icons/walking.svg' : 'assets/icons/running.svg';
+    ttsSpeedBtn.setAttribute('aria-label', ttsRate === 1 ? 'Normal speed' : 'Fast speed');
+});
 
 function setTTSState(newState) {
     ttsState = newState;
@@ -369,15 +418,23 @@ function setTTSState(newState) {
         ttsIcon.src = 'assets/icons/microphone-mute.svg';
         ttsBtn.setAttribute('aria-label', 'Toggle text to speech');
         exitTTSMode();
+        ttsActive = false;
         speechSynthesis.cancel();
         if (currentAudio) fadeTo(currentAudio, MUSIC_VOLUME);
+        ttsIsPaused = false;
+        currentTTSParagraph = null;
+        ttsPauseIcon.src = 'assets/icons/pause.svg';
+        ttsPauseBtn.setAttribute('aria-label', 'Pause');
+        hideTTSControls();
     } else if (newState === 'selecting') {
         ttsIcon.src = 'assets/icons/microphone.svg';
         ttsBtn.setAttribute('aria-label', 'Cancel text to speech');
         enterTTSMode();
     } else if (newState === 'playing') {
         ttsIcon.src = 'assets/icons/microphone-speaking.svg';
-        ttsBtn.setAttribute('aria-label', 'Pause text to speech');
+        ttsBtn.setAttribute('aria-label', 'Stop text to speech');
+        exitTTSMode();
+        showTTSControls();
     }
 }
 
@@ -399,10 +456,7 @@ function addTTSMicBtn(paragraph) {
     btn.appendChild(img);
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        exitTTSMode();
-        ttsState = 'playing';
-        ttsIcon.src = 'assets/icons/microphone-speaking.svg';
-        ttsBtn.setAttribute('aria-label', 'Pause text to speech');
+        setTTSState('playing');
         startTTSFrom(paragraph);
     });
     paragraph.appendChild(btn);
@@ -439,6 +493,7 @@ function exitTTSMode() {
 
 function startTTSFrom(fromParagraph) {
     speechSynthesis.cancel();
+    currentTTSParagraph = fromParagraph;
     if (currentAudio) fadeTo(currentAudio, MUSIC_VOLUME_DUCK);
 
     const allReadable = Array.from(
@@ -454,13 +509,17 @@ function startTTSFrom(fromParagraph) {
 
     if (texts.length === 0) { setTTSState('off'); return; }
 
-    texts.forEach((text, i) => {
-        const utterance = new SpeechSynthesisUtterance(text);
-        if (i === texts.length - 1) {
-            utterance.onend = () => setTTSState('off');
-        }
+    ttsActive = true;
+    let i = 0;
+    function speakNext() {
+        if (!ttsActive) return;
+        if (i >= texts.length) { setTTSState('off'); return; }
+        const utterance = new SpeechSynthesisUtterance(texts[i++]);
+        utterance.rate = ttsRate;
+        utterance.onend = speakNext;
         speechSynthesis.speak(utterance);
-    });
+    }
+    speakNext();
 }
 
 /**
@@ -536,11 +595,20 @@ async function init() {
 
         // Pause music (and TTS) when the tab/window loses focus, resume when it returns
         function onHide() {
-            if (ttsState === 'playing') setTTSState('off');
+            if (ttsState === 'playing') speechSynthesis.pause();
             if (currentAudio) fadePause(currentAudio);
         }
         function onShow() {
-            if (currentAudio) fadeIn(currentAudio);
+            if (ttsState === 'playing') {
+                speechSynthesis.resume();
+                if (currentAudio) {
+                    currentAudio.volume = 0;
+                    currentAudio.play().catch(() => {});
+                    fadeTo(currentAudio, MUSIC_VOLUME_DUCK);
+                }
+            } else {
+                if (currentAudio) fadeIn(currentAudio);
+            }
         }
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) onHide(); else onShow();

@@ -641,6 +641,54 @@ main::-webkit-scrollbar-thumb:hover {
     filter: sepia(1) hue-rotate(10deg) brightness(0.4);
 }
 
+/* ── TTS floating controls pill ─────────────────── */
+
+#tts-controls {
+    position: absolute;
+    bottom: 2rem;
+    left: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.15rem;
+    background: var(--parchment-mid);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.3rem 0.5rem;
+    z-index: 5;
+    animation: scroll-btn-appear 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+}
+
+#tts-controls[hidden] { display: none; }
+
+#tts-controls.is-hiding {
+    animation: scroll-btn-disappear 0.3s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+}
+
+.tts-ctrl-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.3rem;
+    border-radius: 50%;
+}
+
+.tts-ctrl-btn img {
+    display: block;
+    filter: sepia(1) hue-rotate(10deg) brightness(0.55);
+    transition: filter 0.2s;
+}
+
+.tts-ctrl-btn:hover img {
+    filter: sepia(1) hue-rotate(10deg) brightness(0.35);
+}
+
+@media (max-width: 375px) {
+    #tts-controls { bottom: 1rem; left: 1rem; }
+}
+
 /* ── Restart modal ──────────────────────────────── */
 
 .modal-overlay {
