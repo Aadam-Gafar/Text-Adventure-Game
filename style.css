@@ -714,7 +714,7 @@ main::-webkit-scrollbar-thumb:hover {
 .modal {
     background: var(--parchment);
     border: 2px solid var(--border);
-    padding: 2rem 2.25rem;
+    padding: 1.1rem 1.4rem;
     max-width: 360px;
     width: calc(100% - 3rem);
     box-shadow: 0 8px 40px rgba(20, 10, 0, 0.45);
@@ -726,14 +726,14 @@ main::-webkit-scrollbar-thumb:hover {
     font-weight: 400;
     font-size: calc(var(--font-size-story) * 1.09);
     color: var(--ink);
-    margin-bottom: 0.6rem;
+    margin-bottom: 0.35rem;
     letter-spacing: 0.02em;
 }
 
 .modal p {
     font-size: calc(var(--font-size-story) * 0.864);
     color: var(--ink-faded);
-    margin-bottom: 1.6rem;
+    margin-bottom: 0.9rem;
     line-height: 1.5;
 }
 
@@ -947,15 +947,15 @@ main::-webkit-scrollbar-thumb:hover {
 
 .help-modal h2 {
     text-align: center;
-    margin-bottom: 1.2rem;
+    margin-bottom: 0.6rem;
 }
 
 .help-list {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 0.7rem;
-    margin-bottom: 1.6rem;
+    gap: 0.4rem;
+    margin-bottom: 0.9rem;
     max-height: 60dvh;
     overflow-y: auto;
     padding-right: 0.25rem;
