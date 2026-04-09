@@ -396,13 +396,20 @@ function hideTTSControls() {
 
 ttsPauseBtn.addEventListener('click', () => {
     if (ttsIsPaused) {
-        speechSynthesis.resume();
+        // Resume: restart speaking from the saved position
         ttsIsPaused = false;
         ttsPauseIcon.src = 'assets/icons/pause.svg';
         ttsPauseBtn.setAttribute('aria-label', 'Pause');
         if (currentAudio) fadeTo(currentAudio, MUSIC_VOLUME_DUCK);
+        ttsActive = true;
+        ttsSpeak();
     } else {
-        speechSynthesis.pause();
+        // Pause: cancel the utterance and requeue the unspoken remainder
+        // (speechSynthesis.pause() is unreliable across browsers)
+        ttsActive = false;
+        speechSynthesis.cancel();
+        const remaining = ttsCurrentText.slice(ttsLastCharIdx).trim();
+        if (remaining) ttsTexts.splice(ttsTextIdx, 0, remaining);
         ttsIsPaused = true;
         ttsPauseIcon.src = 'assets/icons/play.svg';
         ttsPauseBtn.setAttribute('aria-label', 'Resume');
