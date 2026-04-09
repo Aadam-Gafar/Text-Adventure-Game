@@ -171,7 +171,6 @@ main {
     padding: 2.5rem 3rem;
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
-    transition: padding-left 0.35s ease;
 }
 
 main::-webkit-scrollbar {
@@ -906,13 +905,6 @@ main::-webkit-scrollbar-thumb:hover {
     filter: sepia(1) hue-rotate(10deg) brightness(0.5);
 }
 
-@media (max-width: 600px) {
-    main.tts-mode { padding-left: 2.5rem; }
-}
-
-@media (max-width: 375px) {
-    main.tts-mode { padding-left: 2.25rem; }
-}
 
 /* ── Print ───────────────────────────────────────── */
 
