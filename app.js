@@ -402,16 +402,17 @@ function addTTSMicBtn(paragraph) {
     const btn = document.createElement('button');
     btn.className = 'tts-mic-btn';
     btn.setAttribute('aria-label', 'Read from here');
+    btn.setAttribute('tabindex', '-1');
+    btn.setAttribute('aria-hidden', 'true');
     const img = document.createElement('img');
     img.src = 'assets/icons/microphone.svg';
     img.alt = '';
     btn.appendChild(img);
-    btn.addEventListener('click', (e) => {
-        e.stopPropagation();
+    paragraph.appendChild(btn);
+    paragraph.addEventListener('click', () => {
         setTTSState('playing');
         startTTSFrom(paragraph);
     });
-    paragraph.appendChild(btn);
 }
 
 function enterTTSMode() {

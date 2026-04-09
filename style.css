@@ -255,6 +255,7 @@ main::-webkit-scrollbar-thumb:hover {
 
 .player-choice.tts-indented {
     margin-left: 2em;
+    cursor: pointer;
 }
 
 /* ── Divider between story sections ──────────────── */
