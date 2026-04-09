@@ -569,6 +569,11 @@ main::-webkit-scrollbar-thumb:hover {
         bottom: 1rem;
         right: 1rem;
     }
+
+    #tts-controls {
+        bottom: 1rem;
+        left: 1rem;
+    }
 }
 
 @media (min-width: 768px) {
@@ -650,10 +655,11 @@ main::-webkit-scrollbar-thumb:hover {
     display: flex;
     align-items: center;
     gap: 0.15rem;
+    height: 2.5rem;
     background: var(--parchment-mid);
     border: 1px solid var(--border);
     border-radius: 999px;
-    padding: 0.3rem 0.5rem;
+    padding: 0 0.5rem;
     z-index: 5;
     animation: scroll-btn-appear 0.4s cubic-bezier(0.25, 0.1, 0.25, 1) both;
 }
@@ -683,10 +689,6 @@ main::-webkit-scrollbar-thumb:hover {
 
 .tts-ctrl-btn:hover img {
     filter: sepia(1) hue-rotate(10deg) brightness(0.35);
-}
-
-@media (max-width: 375px) {
-    #tts-controls { bottom: 1rem; left: 1rem; }
 }
 
 /* ── Restart modal ──────────────────────────────── */
