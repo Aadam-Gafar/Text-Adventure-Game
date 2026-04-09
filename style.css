@@ -249,6 +249,12 @@ main::-webkit-scrollbar-thumb:hover {
     padding-left: 1.2rem;
     border-left: 2px solid var(--border);
     animation: manuscript-reveal 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) both;
+    position: relative;
+    transition: margin-left 0.35s ease;
+}
+
+.player-choice.tts-indented {
+    margin-left: 2rem;
 }
 
 /* ── Divider between story sections ──────────────── */
@@ -814,21 +820,24 @@ main::-webkit-scrollbar-thumb:hover {
     display: none;
 }
 
-/* ── TTS inline mic buttons (on player choices) ──── */
+/* ── TTS mic buttons (beside player choices) ────── */
 
 .tts-mic-btn {
-    display: inline-flex;
+    position: absolute;
+    left: -2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
     align-items: center;
+    justify-content: center;
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0 0.35em 0 0;
-    vertical-align: middle;
-    line-height: 1;
+    padding: 0.2em;
     opacity: 0;
     pointer-events: none;
     filter: sepia(1) hue-rotate(10deg) brightness(0.8);
-    transition: opacity 0.4s ease, filter 0.2s;
+    transition: opacity 0.35s ease, filter 0.2s;
 }
 
 .tts-mic-btn.tts-visible {
@@ -838,6 +847,16 @@ main::-webkit-scrollbar-thumb:hover {
 
 .tts-mic-btn:hover {
     filter: sepia(1) hue-rotate(10deg) brightness(0.5);
+}
+
+@media (max-width: 600px) {
+    .player-choice.tts-indented { margin-left: 1.25rem; }
+    .tts-mic-btn { left: -1.25rem; }
+}
+
+@media (max-width: 375px) {
+    .player-choice.tts-indented { margin-left: 1rem; }
+    .tts-mic-btn { left: -1rem; }
 }
 
 /* ── Print ───────────────────────────────────────── */

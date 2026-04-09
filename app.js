@@ -407,7 +407,7 @@ function addTTSMicBtn(paragraph) {
         ttsBtn.setAttribute('aria-label', 'Pause text to speech');
         startTTSFrom(paragraph);
     });
-    paragraph.insertBefore(btn, paragraph.firstChild);
+    paragraph.appendChild(btn);
 }
 
 function enterTTSMode() {
@@ -416,6 +416,7 @@ function enterTTSMode() {
     ttsObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
+                entry.target.classList.add('tts-indented');
                 const btn = entry.target.querySelector('.tts-mic-btn');
                 if (btn) btn.classList.add('tts-visible');
             }
@@ -435,6 +436,7 @@ function exitTTSMode() {
         ttsObserver = null;
     }
     storyContainer.querySelectorAll('.tts-mic-btn').forEach(btn => btn.remove());
+    storyContainer.querySelectorAll('.player-choice.tts-indented').forEach(p => p.classList.remove('tts-indented'));
 }
 
 function startTTSFrom(fromParagraph) {
