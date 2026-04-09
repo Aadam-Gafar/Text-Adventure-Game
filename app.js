@@ -690,7 +690,7 @@ function continueStory(trackChanges = false) {
             if (musicMatch) playMusic(musicMatch[1]);
             if (tag === 'CHECKPOINT') {
                 checkpointInkState = story.state.ToJson();
-                checkpointHistoryLength = storyHistory.length;
+                checkpointHistoryLength = storyHistory.length + 1; // +1 to include the notification that addCheckpointNotification() is about to push
                 checkpointTrack = currentTrack;
                 segments.push({ isCheckpoint: true });
             }
