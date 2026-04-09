@@ -520,20 +520,11 @@ async function init() {
 
         // Pause music (and TTS) when the tab/window loses focus, resume when it returns
         function onHide() {
-            if (ttsState === 'playing') speechSynthesis.pause();
+            if (ttsState === 'playing') setTTSState('off');
             if (currentAudio) fadePause(currentAudio);
         }
         function onShow() {
-            if (ttsState === 'playing') {
-                speechSynthesis.resume();
-                if (currentAudio) {
-                    currentAudio.volume = 0;
-                    currentAudio.play().catch(() => {});
-                    fadeTo(currentAudio, MUSIC_VOLUME_DUCK);
-                }
-            } else {
-                if (currentAudio) fadeIn(currentAudio);
-            }
+            if (currentAudio) fadeIn(currentAudio);
         }
         document.addEventListener('visibilitychange', () => {
             if (document.hidden) onHide(); else onShow();
