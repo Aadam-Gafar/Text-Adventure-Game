@@ -114,6 +114,7 @@ let storyHistory = [];
 let checkpointInkState = null;
 let checkpointHistoryLength = 0;
 let checkpointTrack = null;
+let checkpointTimestamp = null;
 
 function fadeOut(audio, onDone) {
     if (audio._fadeTimer) { clearInterval(audio._fadeTimer); audio._fadeTimer = null; }
@@ -501,6 +502,21 @@ async function init() {
             if (e.key === 'Escape') document.getElementById('restart-modal').setAttribute('hidden', '');
         });
         rewindBtn.addEventListener('click', () => {
+            if (checkpointTimestamp) {
+                const date = new Date(checkpointTimestamp);
+                const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                const diffMs = Date.now() - checkpointTimestamp;
+                const diffSec = Math.floor(diffMs / 1000);
+                const diffMin = Math.floor(diffSec / 60);
+                const diffHr  = Math.floor(diffMin / 60);
+                const diffDay = Math.floor(diffHr / 24);
+                const ago = diffDay  >= 1 ? `${diffDay} day${diffDay   !== 1 ? 's' : ''} ago`
+                          : diffHr   >= 1 ? `${diffHr} hour${diffHr    !== 1 ? 's' : ''} ago`
+                          : diffMin  >= 1 ? `${diffMin} minute${diffMin !== 1 ? 's' : ''} ago`
+                          :                 `${diffSec} second${diffSec !== 1 ? 's' : ''} ago`;
+                document.querySelector('#rewind-modal p').textContent =
+                    `Last saved at: ${timeStr} (${ago})`;
+            }
             document.getElementById('rewind-modal').removeAttribute('hidden');
             document.getElementById('rewind-modal-cancel-btn').focus();
         });
@@ -595,6 +611,7 @@ function loadGame() {
         checkpointInkState = saveData.checkpointInkState || null;
         checkpointHistoryLength = saveData.checkpointHistoryLength || 0;
         checkpointTrack = saveData.checkpointTrack || null;
+        checkpointTimestamp = saveData.checkpointTimestamp || null;
 
         // Restore history
         storyHistory = saveData.history || [];
@@ -648,6 +665,7 @@ function saveGame() {
             checkpointInkState: checkpointInkState,
             checkpointHistoryLength: checkpointHistoryLength,
             checkpointTrack: checkpointTrack,
+            checkpointTimestamp: checkpointTimestamp,
             currentTrack: currentTrack,
             timestamp: Date.now()
         };
@@ -682,6 +700,7 @@ function continueStory(trackChanges = false) {
                 checkpointInkState = story.state.ToJson();
                 checkpointHistoryLength = storyHistory.length + 1; // +1 to include the notification that addCheckpointNotification() is about to push
                 checkpointTrack = currentTrack;
+                checkpointTimestamp = Date.now();
                 segments.push({ isCheckpoint: true });
             }
         }
