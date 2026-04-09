@@ -147,13 +147,12 @@ function fadePause(audio) {
     }, FADE_INTERVAL);
 }
 
-function fadeIn(audio) {
+function fadeIn(audio, target = MUSIC_VOLUME) {
     if (audio._fadeTimer) { clearInterval(audio._fadeTimer); audio._fadeTimer = null; }
-    const target = MUSIC_VOLUME;
     audio.volume = 0;
     audio.play().catch(err => console.error('[playMusic] failed:', err));
     if (target === 0) return;
-    const step = (MUSIC_VOLUME / (FADE_DURATION / FADE_INTERVAL));
+    const step = target / (FADE_DURATION / FADE_INTERVAL);
     audio._fadeTimer = setInterval(() => {
         if (audio.volume + step >= target) {
             audio.volume = target;
@@ -194,7 +193,7 @@ function playMusic(trackName) {
     const newAudio = new Audio(`assets/music/${trackName}.mp3`);
     newAudio.loop = true;
     currentAudio = newAudio;
-    fadeIn(newAudio);
+    fadeIn(newAudio, ttsState === 'playing' ? MUSIC_VOLUME_DUCK : MUSIC_VOLUME);
 }
 
 function stopMusic() {
