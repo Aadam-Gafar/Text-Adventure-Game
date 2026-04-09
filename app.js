@@ -376,7 +376,7 @@ function setTTSState(newState) {
         ttsBtn.setAttribute('aria-label', 'Cancel text to speech');
         enterTTSMode();
     } else if (newState === 'playing') {
-        ttsIcon.src = 'assets/icons/microphone.svg';
+        ttsIcon.src = 'assets/icons/microphone-speaking.svg';
         ttsBtn.setAttribute('aria-label', 'Pause text to speech');
     }
 }
@@ -401,7 +401,7 @@ function addTTSMicBtn(paragraph) {
         e.stopPropagation();
         exitTTSMode();
         ttsState = 'playing';
-        ttsIcon.src = 'assets/icons/microphone.svg';
+        ttsIcon.src = 'assets/icons/microphone-speaking.svg';
         ttsBtn.setAttribute('aria-label', 'Pause text to speech');
         startTTSFrom(paragraph);
     });
