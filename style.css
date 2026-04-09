@@ -720,14 +720,14 @@ main::-webkit-scrollbar-thumb:hover {
 .modal h2 {
     font-family: 'IM Fell Double Pica', Georgia, serif;
     font-weight: 400;
-    font-size: 1.2rem;
+    font-size: calc(var(--font-size-story) * 1.09);
     color: var(--ink);
     margin-bottom: 0.6rem;
     letter-spacing: 0.02em;
 }
 
 .modal p {
-    font-size: 0.95rem;
+    font-size: calc(var(--font-size-story) * 0.864);
     color: var(--ink-faded);
     margin-bottom: 1.6rem;
     line-height: 1.5;
@@ -741,7 +741,7 @@ main::-webkit-scrollbar-thumb:hover {
 
 .modal-btn {
     font-family: 'IM Fell English', Georgia, serif;
-    font-size: 0.95rem;
+    font-size: calc(var(--font-size-story) * 0.864);
     padding: 0.55rem 1.4rem;
     border-radius: 3px;
     cursor: pointer;
@@ -974,7 +974,7 @@ main::-webkit-scrollbar-thumb:hover {
     display: flex;
     align-items: flex-start;
     gap: 0.65rem;
-    font-size: 0.9rem;
+    font-size: calc(var(--font-size-story) * 0.818);
     color: var(--ink-faded);
     line-height: 1.5;
 }
