@@ -611,11 +611,18 @@ async function init() {
         });
 
         // Pause music (and TTS) when the tab/window loses focus, resume when it returns
+        // Guard flag prevents double-firing in Safari, which triggers both
+        // visibilitychange and blur/focus on tab switch (Chrome/Firefox only fire one).
+        let tabIsHidden = false;
         function onHide() {
+            if (tabIsHidden) return;
+            tabIsHidden = true;
             if (ttsState === 'playing') speechSynthesis.pause();
             if (currentAudio) fadePause(currentAudio);
         }
         function onShow() {
+            if (!tabIsHidden) return;
+            tabIsHidden = false;
             if (ttsState === 'playing') {
                 speechSynthesis.resume();
                 if (currentAudio) {
