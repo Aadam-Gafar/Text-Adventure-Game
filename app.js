@@ -519,21 +519,28 @@ async function init() {
             if (e.key === 'Escape') document.getElementById('rewind-modal').setAttribute('hidden', '');
         });
 
-        // Pause music when the tab/window loses focus, resume when it returns
-        document.addEventListener('visibilitychange', () => {
-            if (!currentAudio) return;
-            if (document.hidden) {
-                fadePause(currentAudio);
-            } else {
-                fadeIn(currentAudio);
-            }
-        });
-        window.addEventListener('blur', () => {
+        // Pause music (and TTS) when the tab/window loses focus, resume when it returns
+        function onHide() {
+            if (ttsState === 'playing') speechSynthesis.pause();
             if (currentAudio) fadePause(currentAudio);
+        }
+        function onShow() {
+            if (ttsState === 'playing') {
+                speechSynthesis.resume();
+                if (currentAudio) {
+                    currentAudio.volume = 0;
+                    currentAudio.play().catch(() => {});
+                    fadeTo(currentAudio, MUSIC_VOLUME_DUCK);
+                }
+            } else {
+                if (currentAudio) fadeIn(currentAudio);
+            }
+        }
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) onHide(); else onShow();
         });
-        window.addEventListener('focus', () => {
-            if (currentAudio) fadeIn(currentAudio);
-        });
+        window.addEventListener('blur', onHide);
+        window.addEventListener('focus', onShow);
 
         // Auto-start appropriate game state
         if (hasSaveData()) {
