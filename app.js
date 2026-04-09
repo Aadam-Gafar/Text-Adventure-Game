@@ -360,7 +360,11 @@ let ttsObserver = null;
 let ttsIsPaused = false;
 let ttsRate = 1;
 let currentTTSParagraph = null;
-let ttsActive = false; // guard: prevents speakNext restarting after cancel
+let ttsActive = false;     // guard: prevents ttsSpeak restarting after cancel
+let ttsTexts = [];         // full list of texts to speak
+let ttsTextIdx = 0;        // index of next text to speak
+let ttsCurrentText = '';   // text currently being spoken
+let ttsLastCharIdx = 0;    // last word-boundary char index in ttsCurrentText
 
 const ttsControls  = document.getElementById('tts-controls');
 const ttsPauseBtn  = document.getElementById('tts-pause-btn');
@@ -410,6 +414,15 @@ ttsSpeedBtn.addEventListener('click', () => {
     ttsRate = ttsRate === 1 ? 1.8 : 1;
     ttsSpeedIcon.src = ttsRate === 1 ? 'assets/icons/walking.svg' : 'assets/icons/running.svg';
     ttsSpeedBtn.setAttribute('aria-label', ttsRate === 1 ? 'Normal speed' : 'Fast speed');
+    if (ttsState === 'playing' && ttsActive) {
+        ttsActive = false;
+        speechSynthesis.cancel();
+        // Requeue the unspoken remainder of the current sentence from the last word boundary
+        const remaining = ttsCurrentText.slice(ttsLastCharIdx).trim();
+        if (remaining) ttsTexts.splice(ttsTextIdx, 0, remaining);
+        ttsActive = true;
+        ttsSpeak();
+    }
 });
 
 function setTTSState(newState) {
@@ -491,6 +504,18 @@ function exitTTSMode() {
     storyContainer.querySelectorAll('.player-choice.tts-indented').forEach(p => p.classList.remove('tts-indented'));
 }
 
+function ttsSpeak() {
+    if (!ttsActive) return;
+    if (ttsTextIdx >= ttsTexts.length) { setTTSState('off'); return; }
+    ttsCurrentText = ttsTexts[ttsTextIdx++];
+    ttsLastCharIdx = 0;
+    const utterance = new SpeechSynthesisUtterance(ttsCurrentText);
+    utterance.rate = ttsRate;
+    utterance.onboundary = e => { ttsLastCharIdx = e.charIndex; };
+    utterance.onend = ttsSpeak;
+    speechSynthesis.speak(utterance);
+}
+
 function startTTSFrom(fromParagraph) {
     speechSynthesis.cancel();
     currentTTSParagraph = fromParagraph;
@@ -502,24 +527,16 @@ function startTTSFrom(fromParagraph) {
     const startIdx = allReadable.indexOf(fromParagraph);
     if (startIdx === -1) { setTTSState('off'); return; }
 
-    const texts = allReadable
+    ttsTexts = allReadable
         .slice(startIdx)
         .map(el => el.textContent.trim())
         .filter(t => t.length > 0);
 
-    if (texts.length === 0) { setTTSState('off'); return; }
+    if (ttsTexts.length === 0) { setTTSState('off'); return; }
 
+    ttsTextIdx = 0;
     ttsActive = true;
-    let i = 0;
-    function speakNext() {
-        if (!ttsActive) return;
-        if (i >= texts.length) { setTTSState('off'); return; }
-        const utterance = new SpeechSynthesisUtterance(texts[i++]);
-        utterance.rate = ttsRate;
-        utterance.onend = speakNext;
-        speechSynthesis.speak(utterance);
-    }
-    speakNext();
+    ttsSpeak();
 }
 
 /**
