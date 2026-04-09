@@ -168,11 +168,11 @@ function fadeIn(audio, target = MUSIC_VOLUME) {
 function fadeTo(audio, target) {
     if (audio._fadeTimer) { clearInterval(audio._fadeTimer); audio._fadeTimer = null; }
     if (audio.volume === target) return;
-    const steps = FADE_DURATION / FADE_INTERVAL;
-    const step = (target - audio.volume) / steps;
+    const step = MUSIC_VOLUME / (FADE_DURATION / FADE_INTERVAL);
+    const dir = target > audio.volume ? 1 : -1;
     audio._fadeTimer = setInterval(() => {
-        const next = audio.volume + step;
-        if ((step > 0 && next >= target) || (step < 0 && next <= target)) {
+        const next = audio.volume + dir * step;
+        if ((dir > 0 && next >= target) || (dir < 0 && next <= target)) {
             audio.volume = target;
             clearInterval(audio._fadeTimer);
             audio._fadeTimer = null;
