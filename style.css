@@ -171,6 +171,7 @@ main {
     padding: 2.5rem 3rem;
     -webkit-overflow-scrolling: touch;
     scroll-behavior: smooth;
+    transition: padding-left 0.35s ease;
 }
 
 main::-webkit-scrollbar {
@@ -834,7 +835,7 @@ main::-webkit-scrollbar-thumb:hover {
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0.2em;
+    padding: 0;
     opacity: 0;
     pointer-events: none;
     filter: sepia(1) hue-rotate(10deg) brightness(0.8);
@@ -856,13 +857,11 @@ main::-webkit-scrollbar-thumb:hover {
 }
 
 @media (max-width: 600px) {
-    .player-choice.tts-indented { margin-left: 1.1em; }
-    .tts-mic-btn { left: -1.1em; }
+    main.tts-mode { padding-left: 2.5rem; }
 }
 
 @media (max-width: 375px) {
-    .player-choice.tts-indented { margin-left: 0.9em; }
-    .tts-mic-btn { left: -0.9em; }
+    main.tts-mode { padding-left: 2.25rem; }
 }
 
 /* ── Print ───────────────────────────────────────── */
