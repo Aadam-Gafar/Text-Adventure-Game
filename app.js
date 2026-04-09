@@ -456,6 +456,19 @@ function ttsSpeak() {
     speechSynthesis.speak(utterance);
 }
 
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden && ttsState === 'playing' && !ttsIsPaused) {
+        ttsActive = false;
+        speechSynthesis.cancel();
+        const remaining = ttsCurrentText.slice(ttsLastCharIdx).trim();
+        if (remaining) ttsTexts.splice(ttsTextIdx, 0, remaining);
+        ttsIsPaused = true;
+        ttsPauseIcon.src = 'assets/icons/play.svg';
+        ttsPauseBtn.setAttribute('aria-label', 'Resume');
+        if (currentAudio) currentAudio.volume = MUSIC_VOLUME;
+    }
+});
+
 function startTTSFrom(fromParagraph) {
     speechSynthesis.cancel();
     currentTTSParagraph = fromParagraph;
