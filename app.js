@@ -103,8 +103,6 @@ let currentTrack = null;
 
 const MUSIC_VOLUME      = 0.5;
 const MUSIC_VOLUME_DUCK = MUSIC_VOLUME * 0.15; // volume while TTS is speaking
-const FADE_DURATION = 1500; // ms
-const FADE_INTERVAL = 50;   // ms between steps
 
 // State
 let story;
@@ -116,90 +114,24 @@ let checkpointHistoryLength = 0;
 let checkpointTrack = null;
 let checkpointTimestamp = null;
 
-function fadeOut(audio, onDone) {
-    if (audio._fadeTimer) { clearInterval(audio._fadeTimer); audio._fadeTimer = null; }
-    const step = (MUSIC_VOLUME / (FADE_DURATION / FADE_INTERVAL));
-    audio._fadeTimer = setInterval(() => {
-        if (audio.volume <= step) {
-            audio.volume = 0;
-            audio.pause();
-            audio.currentTime = 0;
-            clearInterval(audio._fadeTimer);
-            audio._fadeTimer = null;
-            if (onDone) onDone();
-        } else {
-            audio.volume -= step;
-        }
-    }, FADE_INTERVAL);
-}
-
-function fadePause(audio) {
-    if (audio._fadeTimer) { clearInterval(audio._fadeTimer); audio._fadeTimer = null; }
-    const step = (MUSIC_VOLUME / (FADE_DURATION / FADE_INTERVAL));
-    audio._fadeTimer = setInterval(() => {
-        if (audio.volume <= step) {
-            audio.volume = 0;
-            audio.pause();
-            clearInterval(audio._fadeTimer);
-            audio._fadeTimer = null;
-        } else {
-            audio.volume -= step;
-        }
-    }, FADE_INTERVAL);
-}
-
-function fadeIn(audio, target = MUSIC_VOLUME) {
-    if (audio._fadeTimer) { clearInterval(audio._fadeTimer); audio._fadeTimer = null; }
-    audio.volume = 0;
-    audio.play().catch(err => console.error('[playMusic] failed:', err));
-    if (target === 0) return;
-    const step = target / (FADE_DURATION / FADE_INTERVAL);
-    audio._fadeTimer = setInterval(() => {
-        if (audio.volume + step >= target) {
-            audio.volume = target;
-            clearInterval(audio._fadeTimer);
-            audio._fadeTimer = null;
-        } else {
-            audio.volume += step;
-        }
-    }, FADE_INTERVAL);
-}
-
-function fadeTo(audio, target) {
-    if (audio._fadeTimer) { clearInterval(audio._fadeTimer); audio._fadeTimer = null; }
-    if (audio.volume === target) return;
-    const step = MUSIC_VOLUME / (FADE_DURATION / FADE_INTERVAL);
-    const dir = target > audio.volume ? 1 : -1;
-    audio._fadeTimer = setInterval(() => {
-        const next = audio.volume + dir * step;
-        if ((dir > 0 && next >= target) || (dir < 0 && next <= target)) {
-            audio.volume = target;
-            clearInterval(audio._fadeTimer);
-            audio._fadeTimer = null;
-        } else {
-            audio.volume = next;
-        }
-    }, FADE_INTERVAL);
-}
 
 function playMusic(trackName) {
     if (currentTrack === trackName) return;
-    // Stop the outgoing track immediately (cancels any in-progress fade)
     if (currentAudio) {
-        const outgoing = currentAudio;
+        currentAudio.pause();
         currentAudio = null;
-        fadeOut(outgoing);
     }
     currentTrack = trackName;
     const newAudio = new Audio(`assets/music/${trackName}.mp3`);
     newAudio.loop = true;
+    newAudio.volume = ttsState === 'playing' ? MUSIC_VOLUME_DUCK : MUSIC_VOLUME;
     currentAudio = newAudio;
-    fadeIn(newAudio, ttsState === 'playing' ? MUSIC_VOLUME_DUCK : MUSIC_VOLUME);
+    newAudio.play().catch(err => console.error('[playMusic] failed:', err));
 }
 
 function stopMusic() {
     if (currentAudio) {
-        fadeOut(currentAudio);
+        currentAudio.pause();
         currentAudio = null;
     }
     currentTrack = null;
@@ -400,7 +332,7 @@ ttsPauseBtn.addEventListener('click', () => {
         ttsIsPaused = false;
         ttsPauseIcon.src = 'assets/icons/pause.svg';
         ttsPauseBtn.setAttribute('aria-label', 'Pause');
-        if (currentAudio) fadeTo(currentAudio, MUSIC_VOLUME_DUCK);
+        if (currentAudio) currentAudio.volume = MUSIC_VOLUME_DUCK;
         ttsActive = true;
         ttsSpeak();
     } else {
@@ -413,7 +345,7 @@ ttsPauseBtn.addEventListener('click', () => {
         ttsIsPaused = true;
         ttsPauseIcon.src = 'assets/icons/play.svg';
         ttsPauseBtn.setAttribute('aria-label', 'Resume');
-        if (currentAudio) fadeTo(currentAudio, MUSIC_VOLUME);
+        if (currentAudio) currentAudio.volume = MUSIC_VOLUME;
     }
 });
 
@@ -440,7 +372,7 @@ function setTTSState(newState) {
         exitTTSMode();
         ttsActive = false;
         speechSynthesis.cancel();
-        if (currentAudio) fadeTo(currentAudio, MUSIC_VOLUME);
+        if (currentAudio) currentAudio.volume = MUSIC_VOLUME;
         ttsIsPaused = false;
         currentTTSParagraph = null;
         ttsPauseIcon.src = 'assets/icons/pause.svg';
@@ -526,7 +458,7 @@ function ttsSpeak() {
 function startTTSFrom(fromParagraph) {
     speechSynthesis.cancel();
     currentTTSParagraph = fromParagraph;
-    if (currentAudio) fadeTo(currentAudio, MUSIC_VOLUME_DUCK);
+    if (currentAudio) currentAudio.volume = MUSIC_VOLUME_DUCK;
 
     const allReadable = Array.from(
         storyContainer.querySelectorAll('.story-text, .player-choice')
@@ -625,7 +557,7 @@ async function init() {
             if (tabIsHidden) return;
             tabIsHidden = true;
             if (ttsState === 'playing') speechSynthesis.pause();
-            if (currentAudio) fadePause(currentAudio);
+            if (currentAudio) currentAudio.pause();
         }
         function onShow() {
             if (!tabIsHidden) return;
@@ -633,12 +565,14 @@ async function init() {
             if (ttsState === 'playing') {
                 speechSynthesis.resume();
                 if (currentAudio) {
-                    currentAudio.volume = 0;
+                    currentAudio.volume = MUSIC_VOLUME_DUCK;
                     currentAudio.play().catch(() => {});
-                    fadeTo(currentAudio, MUSIC_VOLUME_DUCK);
                 }
             } else {
-                if (currentAudio) fadeIn(currentAudio);
+                if (currentAudio) {
+                    currentAudio.volume = MUSIC_VOLUME;
+                    currentAudio.play().catch(() => {});
+                }
             }
         }
         document.addEventListener('visibilitychange', () => {
