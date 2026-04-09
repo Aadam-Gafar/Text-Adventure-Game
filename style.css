@@ -934,6 +934,65 @@ main::-webkit-scrollbar-thumb:hover {
     }
 }
 
+/* ── Help modal ─────────────────────────────────── */
+
+.help-modal {
+    max-width: 480px;
+    text-align: left;
+}
+
+.help-modal h2 {
+    text-align: center;
+    margin-bottom: 1.2rem;
+}
+
+.help-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    margin-bottom: 1.6rem;
+    max-height: 60dvh;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+}
+
+.help-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+.help-list::-webkit-scrollbar-track {
+    background: var(--parchment-mid);
+}
+
+.help-list::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+.help-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    font-size: 0.9rem;
+    color: var(--ink-faded);
+    line-height: 1.5;
+}
+
+.help-icon {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    flex-shrink: 0;
+    margin-top: 0.1em;
+    filter: sepia(1) hue-rotate(10deg) brightness(0.55);
+    min-width: 20px;
+}
+
+.help-list strong {
+    color: var(--ink);
+}
+
 #zoom-out-btn:disabled,
 #zoom-in-btn:disabled,
 .zoom-out-btn:disabled,

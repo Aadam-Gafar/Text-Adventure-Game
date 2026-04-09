@@ -550,6 +550,21 @@ async function init() {
             if (e.key === 'Escape') document.getElementById('rewind-modal').setAttribute('hidden', '');
         });
 
+        // Help modal
+        document.getElementById('help-btn').addEventListener('click', () => {
+            document.getElementById('help-modal').removeAttribute('hidden');
+            document.getElementById('help-modal-close-btn').focus();
+        });
+        document.getElementById('help-modal-close-btn').addEventListener('click', () => {
+            document.getElementById('help-modal').setAttribute('hidden', '');
+        });
+        document.getElementById('help-modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) e.currentTarget.setAttribute('hidden', '');
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') document.getElementById('help-modal').setAttribute('hidden', '');
+        });
+
         // Pause music (and TTS) when the tab/window loses focus, resume when it returns
         // Guard flag prevents double-firing in Safari, which triggers both
         // visibilitychange and blur/focus on tab switch (Chrome/Firefox only fire one).

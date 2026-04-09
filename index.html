@@ -25,6 +25,9 @@
                 <button id="rewind-btn" class="header-btn" aria-label="Load last checkpoint" disabled>
                     <img src="assets/icons/rewind.svg" alt="" width="24" height="24">
                 </button>
+                <button id="help-btn" class="header-btn" aria-label="Help">
+                    <img src="assets/icons/help-circle.svg" alt="" width="24" height="24">
+                </button>
             </div>
             <div class="header-actions">
                 <button id="theme-btn" class="header-btn" aria-label="Toggle dark mode">
@@ -100,6 +103,62 @@
             <div class="modal-actions">
                 <button id="rewind-modal-cancel-btn" class="modal-btn modal-btn-cancel">Cancel</button>
                 <button id="rewind-modal-confirm-btn" class="modal-btn modal-btn-confirm">Rewind</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help modal -->
+    <div id="help-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="help-modal-title" hidden>
+        <div class="modal help-modal">
+            <h2 id="help-modal-title">Controls</h2>
+            <ul class="help-list">
+                <li>
+                    <span class="help-icon"><img src="assets/icons/restart.svg" alt="" width="18" height="18"></span>
+                    <span><strong>Restart</strong> — Begin the game again from the very start. All progress will be lost.</span>
+                </li>
+                <li>
+                    <span class="help-icon"><img src="assets/icons/rewind.svg" alt="" width="18" height="18"></span>
+                    <span><strong>Rewind</strong> — Return to the last checkpoint. Progress since then will be lost. Unlocks after reaching a checkpoint.</span>
+                </li>
+                <li>
+                    <span class="help-icon"><img src="assets/icons/theme.svg" alt="" width="18" height="18"></span>
+                    <span><strong>Dark mode</strong> — Toggle between light parchment and dark themes.</span>
+                </li>
+                <li>
+                    <span class="help-icon"><img src="assets/icons/glasses.svg" alt="" width="18" height="18"></span>
+                    <span><strong>Dyslexia-friendly font</strong> — Switch to OpenDyslexic, a typeface designed to aid reading.</span>
+                </li>
+                <li>
+                    <span class="help-icon"><img src="assets/icons/zoom-out.svg" alt="" width="18" height="18"><img src="assets/icons/zoom-in.svg" alt="" width="18" height="18"></span>
+                    <span><strong>Font size</strong> — Make the text smaller or larger.</span>
+                </li>
+                <li>
+                    <span class="help-icon"><img src="assets/icons/microphone.svg" alt="" width="18" height="18"></span>
+                    <span><strong>Text-to-speech</strong> — Read the story aloud using your device's voice synthesis.</span>
+                </li>
+                <li>
+                    <span class="help-icon"><img src="assets/icons/pause.svg" alt="" width="18" height="18"></span>
+                    <span><strong>Pause / Resume</strong> — Pause or continue TTS narration (appears when TTS is on).</span>
+                </li>
+                <li>
+                    <span class="help-icon"><img src="assets/icons/walking.svg" alt="" width="18" height="18"></span>
+                    <span><strong>TTS speed</strong> — Toggle between normal and fast narration speed (appears when TTS is on).</span>
+                </li>
+                <li>
+                    <span class="help-icon"><img src="assets/icons/microphone.svg" alt="" width="18" height="18"></span>
+                    <span><strong>Re-read choice</strong> — Small mic icons beside past choices let you replay that line's narration.</span>
+                </li>
+                <li>
+                    <span class="help-icon"><img src="assets/icons/suitcase.svg" alt="" width="18" height="18"></span>
+                    <span><strong>Inventory-gated choice</strong> — A suitcase icon means this option requires a specific item in your inventory.</span>
+                </li>
+                <li>
+                    <span class="help-icon"><img src="assets/icons/arrow-down.svg" alt="" width="18" height="18"></span>
+                    <span><strong>Scroll to bottom</strong> — Jump to the latest content (appears when scrolled up).</span>
+                </li>
+            </ul>
+            <div class="modal-actions">
+                <button id="help-modal-close-btn" class="modal-btn modal-btn-cancel">Close</button>
             </div>
         </div>
     </div>
