@@ -254,7 +254,7 @@ main::-webkit-scrollbar-thumb:hover {
 }
 
 .player-choice.tts-indented {
-    margin-left: 2rem;
+    margin-left: 2em;
 }
 
 /* ── Divider between story sections ──────────────── */
@@ -824,7 +824,8 @@ main::-webkit-scrollbar-thumb:hover {
 
 .tts-mic-btn {
     position: absolute;
-    left: -2rem;
+    font-size: var(--font-size-player);
+    left: -2em;
     top: 50%;
     transform: translateY(-50%);
     display: flex;
@@ -840,6 +841,11 @@ main::-webkit-scrollbar-thumb:hover {
     transition: opacity 0.35s ease, filter 0.2s;
 }
 
+.tts-mic-btn img {
+    width: 1em;
+    height: 1em;
+}
+
 .tts-mic-btn.tts-visible {
     opacity: 1;
     pointer-events: auto;
@@ -850,13 +856,13 @@ main::-webkit-scrollbar-thumb:hover {
 }
 
 @media (max-width: 600px) {
-    .player-choice.tts-indented { margin-left: 1.25rem; }
-    .tts-mic-btn { left: -1.25rem; }
+    .player-choice.tts-indented { margin-left: 1.1em; }
+    .tts-mic-btn { left: -1.1em; }
 }
 
 @media (max-width: 375px) {
-    .player-choice.tts-indented { margin-left: 1rem; }
-    .tts-mic-btn { left: -1rem; }
+    .player-choice.tts-indented { margin-left: 0.9em; }
+    .tts-mic-btn { left: -0.9em; }
 }
 
 /* ── Print ───────────────────────────────────────── */

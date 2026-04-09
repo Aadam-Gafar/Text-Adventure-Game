@@ -396,8 +396,6 @@ function addTTSMicBtn(paragraph) {
     const img = document.createElement('img');
     img.src = 'assets/icons/microphone.svg';
     img.alt = '';
-    img.width = 14;
-    img.height = 14;
     btn.appendChild(img);
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
