@@ -139,7 +139,7 @@ function stopMusic() {
 
 // Inventory
 let invVarNames = [];
-let invGatedChoiceTexts = new Set();
+let invGatedChoiceTexts = new Map();
 
 inventoryToggle.addEventListener('click', () => {
     const open = inventoryBar.getAttribute('aria-expanded') === 'true';
@@ -149,7 +149,7 @@ inventoryToggle.addEventListener('click', () => {
 });
 
 function buildInvGatedChoiceTexts(storyJSON) {
-    const texts = new Set();
+    const texts = new Map();
 
     // Find the object at the end of an array that holds choice bodies (c-0, c-1, …)
     function getChoiceBodies(arr) {
@@ -221,7 +221,8 @@ function buildInvGatedChoiceTexts(storyJSON) {
                     if (pathMatch) {
                         const body = bodies['c-' + pathMatch[1]];
                         if (body && !bodyDropsInvVar(body, invVarsChecked)) {
-                            texts.add(choiceText);
+                            const reqName = [...invVarsChecked].map(formatInvName).join(', ');
+                            texts.set(choiceText, reqName);
                         }
                     }
                 }
@@ -853,6 +854,7 @@ function addPlayerChoice(text) {
     }
 }
 
+
 /**
  * Display choice buttons
  */
@@ -865,12 +867,89 @@ function displayChoices() {
 
     story.currentChoices.forEach((choice, index) => {
         const button = document.createElement('button');
-        const isInvGated = invGatedChoiceTexts.has(choice.text);
+        const reqName = invGatedChoiceTexts.get(choice.text);
+        const isInvGated = reqName !== undefined;
         button.className = isInvGated ? 'choice-btn inv-gated' : 'choice-btn';
-        button.textContent = choice.text;
         button.setAttribute('aria-label', `Choice: ${choice.text}`);
 
-        button.addEventListener('click', () => handleChoiceClick(choice, index));
+        const label = document.createElement('span');
+        label.className = 'btn-label';
+        label.textContent = choice.text;
+        button.appendChild(label);
+
+        if (isInvGated) {
+            const req = document.createElement('span');
+            req.className = 'btn-req';
+            req.textContent = `Requirement: ${reqName}`;
+            button.appendChild(req);
+
+            let holdTimer = null;
+            let holdFired = false;
+
+            const snapToLabel = () => {
+                label.classList.remove('wipe-out', 'wipe-in');
+                req.classList.remove('wipe-out', 'wipe-in');
+                label.style.display = '';
+                req.style.display = 'none';
+            };
+
+            const showReq = () => {
+                label.classList.add('wipe-out');
+                label.addEventListener('animationend', () => {
+                    label.classList.remove('wipe-out');
+                    label.style.display = 'none';
+                    req.style.display = 'inline-block';
+                    req.classList.add('wipe-in');
+                    req.addEventListener('animationend', () => {
+                        req.classList.remove('wipe-in');
+                    }, { once: true });
+                }, { once: true });
+            };
+
+            const hideReq = () => {
+                label.classList.remove('wipe-out', 'wipe-in');
+                req.classList.remove('wipe-in');
+                label.style.display = 'none';
+                req.style.display = 'inline-block';
+                req.classList.add('wipe-out');
+                req.addEventListener('animationend', () => {
+                    req.classList.remove('wipe-out');
+                    req.style.display = 'none';
+                    label.style.display = '';
+                    label.classList.add('wipe-in');
+                    label.addEventListener('animationend', () => {
+                        label.classList.remove('wipe-in');
+                    }, { once: true });
+                }, { once: true });
+            };
+
+            button.addEventListener('pointerdown', () => {
+                holdFired = false;
+                clearTimeout(holdTimer);
+                snapToLabel();
+                holdTimer = setTimeout(() => {
+                    holdFired = true;
+                    showReq();
+                }, 500);
+            });
+
+            const revert = () => {
+                clearTimeout(holdTimer);
+                if (!holdFired) return;
+                hideReq();
+            };
+
+            button.addEventListener('pointerup', revert);
+            button.addEventListener('pointerleave', revert);
+            button.addEventListener('pointercancel', revert);
+
+            button.addEventListener('click', () => {
+                if (holdFired) { holdFired = false; return; }
+                handleChoiceClick(choice, index);
+            });
+        } else {
+            button.addEventListener('click', () => handleChoiceClick(choice, index));
+        }
 
         choicesDiv.appendChild(button);
     });

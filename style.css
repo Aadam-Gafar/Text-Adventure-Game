@@ -383,6 +383,38 @@ main::-webkit-scrollbar-thumb:hover {
     color: var(--crimson);
 }
 
+/* ── Requirement reveal (long-press on inv-gated choices) ── */
+
+@keyframes btn-wipe-out {
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(-0.6rem); }
+}
+
+@keyframes btn-wipe-in {
+    from { opacity: 0; transform: translateX(0.6rem); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.choice-btn .btn-label {
+    display: inline-block;
+}
+
+.choice-btn .btn-req {
+    display: none;
+    color: var(--sepia-light);
+    font-style: italic;
+}
+
+.choice-btn .btn-label.wipe-out,
+.choice-btn .btn-req.wipe-out {
+    animation: btn-wipe-out 0.18s ease-out forwards;
+}
+
+.choice-btn .btn-label.wipe-in,
+.choice-btn .btn-req.wipe-in {
+    animation: btn-wipe-in 0.22s ease-out forwards;
+}
+
 /* ── OpenDyslexic mode ───────────────────────────── */
 
 [data-font="dyslexic"] body,
