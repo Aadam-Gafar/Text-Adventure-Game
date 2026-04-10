@@ -293,6 +293,7 @@ let ttsIsPaused = false;
 let ttsRate = 1;
 let currentTTSParagraph = null;
 let ttsActive = false;     // guard: prevents ttsSpeak restarting after cancel
+let ttsSession = 0;        // incremented on each cancel; guards against iOS late onend callbacks
 let ttsTexts = [];         // full list of texts to speak
 let ttsTextIdx = 0;        // index of next text to speak
 let ttsCurrentText = '';   // text currently being spoken
@@ -339,6 +340,7 @@ ttsPauseBtn.addEventListener('click', () => {
         // Pause: cancel the utterance and requeue the unspoken remainder
         // (speechSynthesis.pause() is unreliable across browsers)
         ttsActive = false;
+        ttsSession++;
         speechSynthesis.cancel();
         const remaining = ttsCurrentText.slice(ttsLastCharIdx).trim();
         if (remaining) ttsTexts.splice(ttsTextIdx, 0, remaining);
@@ -355,6 +357,7 @@ ttsSpeedBtn.addEventListener('click', () => {
     ttsSpeedBtn.setAttribute('aria-label', ttsRate === 1 ? 'Normal speed' : 'Fast speed');
     if (ttsState === 'playing' && ttsActive) {
         ttsActive = false;
+        ttsSession++;
         speechSynthesis.cancel();
         // Requeue the unspoken remainder of the current sentence from the last word boundary
         const remaining = ttsCurrentText.slice(ttsLastCharIdx).trim();
@@ -371,6 +374,7 @@ function setTTSState(newState) {
         ttsBtn.setAttribute('aria-label', 'Toggle text to speech');
         exitTTSMode();
         ttsActive = false;
+        ttsSession++;
         speechSynthesis.cancel();
         if (currentAudio) currentAudio.volume = MUSIC_VOLUME;
         ttsIsPaused = false;
@@ -451,14 +455,16 @@ function ttsSpeak() {
     ttsLastCharIdx = 0;
     const utterance = new SpeechSynthesisUtterance(ttsCurrentText);
     utterance.rate = ttsRate;
-    utterance.onboundary = e => { ttsLastCharIdx = e.charIndex; };
-    utterance.onend = ttsSpeak;
+    const mySession = ttsSession;
+    utterance.onboundary = e => { if (ttsSession === mySession) ttsLastCharIdx = e.charIndex; };
+    utterance.onend = () => { if (ttsSession === mySession) ttsSpeak(); };
     speechSynthesis.speak(utterance);
 }
 
 document.addEventListener('visibilitychange', () => {
     if (document.hidden && ttsState === 'playing' && !ttsIsPaused) {
         ttsActive = false;
+        ttsSession++;
         speechSynthesis.cancel();
         const remaining = ttsCurrentText.slice(ttsLastCharIdx).trim();
         if (remaining) ttsTexts.splice(ttsTextIdx, 0, remaining);
@@ -470,6 +476,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 function startTTSFrom(fromParagraph) {
+    ttsSession++;
     speechSynthesis.cancel();
     currentTTSParagraph = fromParagraph;
     if (currentAudio) currentAudio.volume = MUSIC_VOLUME_DUCK;
