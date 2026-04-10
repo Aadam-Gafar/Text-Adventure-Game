@@ -310,6 +310,8 @@ main::-webkit-scrollbar-thumb:hover {
     line-height: 1.55;
     cursor: pointer;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: flex-start;
     min-height: 52px;
     position: relative;
     letter-spacing: 0.01em;
@@ -396,7 +398,8 @@ main::-webkit-scrollbar-thumb:hover {
 }
 
 .choice-btn .btn-label {
-    display: inline-block;
+    display: block;
+    flex: 1;
 }
 
 .choice-btn .btn-req {
