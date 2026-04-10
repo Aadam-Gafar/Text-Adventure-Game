@@ -479,7 +479,11 @@ main::-webkit-scrollbar-thumb:hover {
 
     /* Quick actions (restart, rewind) — always visible, fade in/out with favicon */
     .header-quick-actions {
-        transition: opacity 0.25s ease;
+        transition: opacity 0.25s ease 350ms; /* wait for menu icons to finish collapsing */
+    }
+
+    .header-favicon {
+        transition: opacity 0.25s ease 350ms;
     }
 
     .header-quick-actions .header-btn {
@@ -494,6 +498,7 @@ main::-webkit-scrollbar-thumb:hover {
     header.menu-open .header-quick-actions {
         opacity: 0;
         pointer-events: none;
+        transition-delay: 0ms;
     }
 
     /* Icon buttons in header-actions: collapsed to zero width, invisible */
@@ -509,14 +514,14 @@ main::-webkit-scrollbar-thumb:hover {
                     background 0.2s, color 0.2s;
     }
 
-    /* Closing stagger: ripple right into menu btn */
-    .header-actions .header-btn:nth-child(1) { transition-delay: 0ms; }
-    .header-actions .header-btn:nth-child(2) { transition-delay: 25ms; }
-    .header-actions .header-btn:nth-child(3) { transition-delay: 50ms; }
-    .header-actions .header-btn:nth-child(4) { transition-delay: 75ms; }
-    .header-actions .header-btn:nth-child(5) { transition-delay: 100ms; }
-    .header-actions .header-btn:nth-child(6) { transition-delay: 125ms; }
-    .header-actions .header-btn:nth-child(7) { transition-delay: 150ms; }
+    /* Closing stagger: mirror of opening — rightmost (closest to menu btn) collapses first */
+    .header-actions .header-btn:nth-last-child(2) { transition-delay: 0ms; }
+    .header-actions .header-btn:nth-last-child(3) { transition-delay: 25ms; }
+    .header-actions .header-btn:nth-last-child(4) { transition-delay: 50ms; }
+    .header-actions .header-btn:nth-last-child(5) { transition-delay: 75ms; }
+    .header-actions .header-btn:nth-last-child(6) { transition-delay: 100ms; }
+    .header-actions .header-btn:nth-last-child(7) { transition-delay: 125ms; }
+    .header-actions .header-btn:nth-last-child(8) { transition-delay: 150ms; }
 
     .mobile-menu-btn {
         display: flex;
@@ -527,23 +532,27 @@ main::-webkit-scrollbar-thumb:hover {
     header.menu-open .header-favicon {
         opacity: 0;
         pointer-events: none;
+        transition-delay: 0ms;
     }
 
-    header.menu-open .header-actions {
+    header.menu-open .header-actions,
+    header.menu-closing .header-actions {
         position: absolute;
         top: 0;
         right: 0;
         left: 0;
         bottom: auto;
         height: 100%;
-        background: var(--parchment-mid);
-        border-bottom: 2px solid var(--border);
         overflow-x: auto;
         overflow-y: hidden;
         flex-wrap: nowrap;
         width: 100vw;
         justify-content: flex-end;
         padding-right: 1.1rem;
+    }
+
+    header.menu-open .header-actions {
+        background: var(--parchment-mid);
     }
 
     header.menu-open .header-actions::-webkit-scrollbar {

@@ -14,7 +14,14 @@ const ttsIcon          = document.getElementById('tts-icon');
 
 // Mobile menu toggle
 menuBtn.addEventListener('click', () => {
-    document.querySelector('header').classList.toggle('menu-open');
+    const header = document.querySelector('header');
+    if (header.classList.contains('menu-open')) {
+        header.classList.remove('menu-open');
+        header.classList.add('menu-closing');
+        setTimeout(() => header.classList.remove('menu-closing'), 350);
+    } else {
+        header.classList.add('menu-open');
+    }
 });
 
 // Storage key
