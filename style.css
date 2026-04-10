@@ -358,7 +358,8 @@ main::-webkit-scrollbar-thumb:hover {
 .choice-btn.inv-gated {
     border-color: var(--sepia);
     background: rgba(140, 100, 40, 0.05);
-    padding-right: 3rem;
+    padding-right: 3.5em;
+    padding-left: 1.25em;
 }
 
 .choice-btn.inv-gated::before {
@@ -368,11 +369,11 @@ main::-webkit-scrollbar-thumb:hover {
 .choice-btn.inv-gated::after {
     content: '';
     position: absolute;
-    right: 0.75rem;
+    right: 1.25em;
     top: 50%;
     transform: translateY(-50%);
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1em;
+    height: 1em;
     background: url('assets/icons/suitcase.svg') center / contain no-repeat;
 }
 
