@@ -1111,6 +1111,55 @@ scrollBottomBtn.addEventListener('click', () => {
 });
 
 /**
+ * Auto-hide header + inventory on scroll down (narrow views only)
+ */
+const headerEl = document.querySelector('header');
+let lastNavScrollTop = 0;
+let navIsHidden = false;
+
+function showNav() {
+    if (!navIsHidden) return;
+    headerEl.style.marginTop = '';
+    navIsHidden = false;
+}
+
+function hideNav() {
+    if (navIsHidden) return;
+    const navHeight = headerEl.offsetHeight + inventoryBar.offsetHeight;
+    headerEl.style.marginTop = `-${navHeight}px`;
+    navIsHidden = true;
+}
+
+function updateNavVisibility() {
+    if (window.innerWidth > 600) {
+        showNav();
+        lastNavScrollTop = storyContainer.scrollTop;
+        return;
+    }
+    // Don't hide when mobile menu is open
+    if (headerEl.classList.contains('menu-open')) {
+        lastNavScrollTop = storyContainer.scrollTop;
+        return;
+    }
+
+    const currentScrollTop = storyContainer.scrollTop;
+    const delta = currentScrollTop - lastNavScrollTop;
+    lastNavScrollTop = currentScrollTop;
+
+    if (delta > 4 && currentScrollTop > 80) {
+        hideNav();
+    } else if (delta < -4) {
+        showNav();
+    }
+}
+
+storyContainer.addEventListener('scroll', updateNavVisibility);
+
+window.addEventListener('resize', () => {
+    if (window.innerWidth > 600) showNav();
+});
+
+/**
  * Keyboard shortcuts
  */
 document.addEventListener('keydown', (e) => {

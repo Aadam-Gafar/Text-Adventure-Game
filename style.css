@@ -462,6 +462,7 @@ main::-webkit-scrollbar-thumb:hover {
     header {
         padding: 0.875rem 1.1rem;
         position: relative;
+        transition: margin-top 0.3s ease, background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
     }
 
     header h1 {
