@@ -617,8 +617,8 @@ main::-webkit-scrollbar-thumb:hover {
     background: var(--parchment-mid);
     border: 1px solid var(--border);
     border-radius: 50%;
-    width: calc(var(--font-size-story) * 2.27);
-    height: calc(var(--font-size-story) * 2.27);
+    width: 2.5rem;
+    height: 2.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -634,8 +634,8 @@ main::-webkit-scrollbar-thumb:hover {
 }
 
 .scroll-bottom-btn img {
-    width: calc(var(--font-size-story) * 1.36);
-    height: calc(var(--font-size-story) * 1.36);
+    width: 1.5rem;
+    height: 1.5rem;
     filter: sepia(1) hue-rotate(10deg) brightness(0.55);
     transition: filter 0.2s;
 }
@@ -657,7 +657,7 @@ main::-webkit-scrollbar-thumb:hover {
     display: flex;
     align-items: center;
     gap: 0.15rem;
-    height: calc(var(--font-size-story) * 2.27);
+    height: 2.5rem;
     background: var(--parchment-mid);
     border: 1px solid var(--border);
     border-radius: 999px;
@@ -685,8 +685,8 @@ main::-webkit-scrollbar-thumb:hover {
 
 .tts-ctrl-btn img {
     display: block;
-    width: calc(var(--font-size-story) * 1.36);
-    height: calc(var(--font-size-story) * 1.36);
+    width: 1.5rem;
+    height: 1.5rem;
     filter: sepia(1) hue-rotate(10deg) brightness(0.55);
     transition: filter 0.2s;
 }
