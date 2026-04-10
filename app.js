@@ -425,10 +425,13 @@ function enterTTSMode() {
 
     ttsObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
+            const btn = entry.target.querySelector('.tts-mic-btn');
             if (entry.isIntersecting) {
                 entry.target.classList.add('tts-indented');
-                const btn = entry.target.querySelector('.tts-mic-btn');
                 if (btn) btn.classList.add('tts-visible');
+            } else {
+                entry.target.classList.remove('tts-indented');
+                if (btn) btn.classList.remove('tts-visible');
             }
         });
     }, { root: storyContainer, threshold: 0.1 });
